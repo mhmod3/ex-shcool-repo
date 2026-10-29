@@ -475,15 +475,15 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     display: block; font-size: 11px; color: var(--faint);
     margin-top: 1px; font-variant-numeric: tabular-nums;
 }
-.gridtable .is-today { background: var(--amber-tint); }
-.gridtable thead th.is-today {
+.gridtable .is-next { background: var(--amber-tint); }
+.gridtable thead th.is-next {
     color: var(--amber); font-weight: 700;
     background: var(--amber-tint);
 }
 /* One-shot "ink in" sweep (steer 9f2c1d74): on the first display of the
-   weekly view the amber today column is inked in place. The is-sweep class
-   is set by js/app.js and removed on animationend. */
-.gridtable.is-sweep .is-today {
+   weekly view the amber next-study-day column is inked in place. The
+   is-sweep class is set by js/app.js and removed on animationend. */
+.gridtable.is-sweep .is-next {
     animation: ink-in 0.6s var(--ease-out) 0.12s both;
 }
 @keyframes ink-in { from { background-color: transparent; } }

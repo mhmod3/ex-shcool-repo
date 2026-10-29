@@ -55,10 +55,10 @@
         });
     }
 
-    /* One-shot sweeps: the amber today column is inked on the first
-       display of the weekly view; the upcoming exam row flashes red ink
-       on the first display of the exams view. The is-sweep class is
-       removed on animationend so the sweep can never run twice. */
+    /* One-shot sweeps: the amber next-study-day column is inked on the
+       first display of the weekly view; the upcoming exam row flashes
+       red ink on the first display of the exams view. The is-sweep class
+       is removed on animationend so the sweep can never run twice. */
     var swept = { weekly: false, exams: false };
 
     function firstSweep(name) {
@@ -83,9 +83,10 @@
     /* ---------- Date-aware views: one load-time pass against the real clock ----------
        The weekly grid is the single source of truth for the day's
        lessons, the exam table for exam dates. This pass reads both and
-       aligns every date-bound view: the day head (number + weekday),
-       the amber today column, the today class list, exam row states
-       (past / next), the summary chips, the exam line, and the
+       aligns every date-bound view: the day head (number + weekday —
+       the real day), the amber next-study-day column and its class
+       list (tomorrow; Sunday straight after a weekend), exam row
+       states (past / next), the summary chips, the exam line, and the
        attention flag — with relative labels (اليوم / غدًا / بعد غد /
        بعد N أيام) instead of fixture copy. Dated records (absence log,
        chat days, pinned note) stay history; only day-relative claims
@@ -107,50 +108,56 @@
         var now = new Date();
         var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         var day = now.getDay(); // 0 = الأحد … 6 = السبت; the grid carries 0..4
+        /* The portal reads the next study day, not the one in progress:
+           tomorrow on Sat–Thu, Sunday straight after Fri/Sat. Always a
+           grid column (0..4). The day head above keeps the real day. */
+        var focus = (day + 1) % 7;
+        if (focus === 5 || focus === 6) focus = 0;
         var grid = $(".gridtable");
 
-        /* The big date + weekday */
+        /* The big date + weekday (the real day) */
         var num = $(".dayhead .date-num");
         var meta = $(".dayhead .date-meta");
         if (num) num.textContent = today.getDate() + "/" + pad2(today.getMonth() + 1);
         if (meta) meta.textContent = AR_DAYS[day];
 
-        /* Amber today column (also the first-display sweep target) */
+        /* Amber next-study-day column (also the first-display sweep target) */
         if (grid) {
-            $$(".is-today", grid).forEach(function (el) { el.classList.remove("is-today"); });
-            if (day <= 4) {
-                var head = $("thead th:nth-child(" + (day + 2) + ")", grid);
-                if (head) head.classList.add("is-today");
-                $$("tbody tr", grid).forEach(function (tr) {
-                    if (tr.cells[day + 1]) tr.cells[day + 1].classList.add("is-today");
-                });
-            }
+            $$(".is-next", grid).forEach(function (el) { el.classList.remove("is-next"); });
+            var head = $("thead th:nth-child(" + (focus + 2) + ")", grid);
+            if (head) head.classList.add("is-next");
+            $$("tbody tr", grid).forEach(function (tr) {
+                if (tr.cells[focus + 1]) tr.cells[focus + 1].classList.add("is-next");
+            });
         }
 
-        /* Today's class list, rebuilt from the grid's today column */
+        /* Next-study-day class list, rebuilt from the grid's focus column */
         var list = $(".classlist");
         if (list && grid) {
             var html = "";
-            if (day <= 4) {
-                var no = 0;
-                $$("tbody tr", grid).forEach(function (tr) {
-                    var td = tr.cells[day + 1];
-                    if (!td) return;
-                    var s = td.querySelector("strong");
-                    if (!s) return;
-                    no += 1;
-                    var t = td.querySelector("small");
-                    var time = tr.cells[0] ? tr.cells[0].querySelector("small") : null;
-                    html += '<div class="crow"><span class="c-no">' + no + "</span>" +
-                        '<span class="c-subject">' + s.textContent + "</span>" +
-                        '<span class="c-teacher">' + (t ? t.textContent : "") + "</span>" +
-                        '<span class="c-time" dir="ltr">' + (time ? time.textContent : "") + "</span></div>";
-                });
-            }
+            var no = 0;
+            $$("tbody tr", grid).forEach(function (tr) {
+                var td = tr.cells[focus + 1];
+                if (!td) return;
+                var s = td.querySelector("strong");
+                if (!s) return;
+                no += 1;
+                var t = td.querySelector("small");
+                var time = tr.cells[0] ? tr.cells[0].querySelector("small") : null;
+                html += '<div class="crow"><span class="c-no">' + no + "</span>" +
+                    '<span class="c-subject">' + s.textContent + "</span>" +
+                    '<span class="c-teacher">' + (t ? t.textContent : "") + "</span>" +
+                    '<span class="c-time" dir="ltr">' + (time ? time.textContent : "") + "</span></div>";
+            });
             list.innerHTML = html !== ""
                 ? html
-                : '<div class="empty"><p>لا دروس اليوم</p><p class="empty-sub">لا دروس يوم ' + AR_DAYS[day] + " في الجدول الأسبوعي.</p></div>";
+                : '<div class="empty"><p>لا دروس</p><p class="empty-sub">لا دروس يوم ' + AR_DAYS[focus] + " في الجدول الأسبوعي.</p></div>";
         }
+        /* The list's head names the focus day: الغد whenever it is literally
+           tomorrow (Sat–Thu and Saturday, whose tomorrow is Sunday), الأحد
+           when Friday skips the weekend. */
+        var listHead = $("#panel-today h2");
+        if (listHead) listHead.textContent = focus === (day + 1) % 7 ? "دروس الغد" : "دروس الأحد";
 
         /* Exam rows: past attenuated, the next upcoming red-tinted */
         function examDate(cell) {
