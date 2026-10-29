@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مدرستي — بوابة الطالب · محفظة التذاكر</title>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:#101C3A;font-family:'Almarai',Tahoma,sans-serif}
+.sheet{width:1440px;height:900px;position:relative}
+/* ── top strip: navy shell, paper lettering ── */
+.top{position:absolute;inset:0 0 auto 0;height:64px;background:#101C3A;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.app b{font-size:26px;font-weight:800;color:#F5F2E9;letter-spacing:.5px}
+.app span{color:#F5F2E9;font-weight:700;font-size:14px;margin-right:12px;padding:3px 12px;border:1px solid rgba(245,242,233,.55);border-radius:3px}
+.who{font-size:13px;color:#F5F2E9;opacity:.7}
+.who i{font-style:normal}
+/* ── left rail: navy, paper labels ── */
+.rail{position:absolute;top:64px;left:0;bottom:0;width:92px;background:#101C3A;display:flex;flex-direction:column;gap:4px;padding:22px 0}
+.rl{font-size:13px;color:#F5F2E9;opacity:.55;font-weight:400;text-align:center;padding:9px 4px;position:relative}
+.rl.on{opacity:1;font-weight:700}
+.rl.on::before{content:"";position:absolute;right:9px;top:50%;transform:translateY(-50%);width:5px;height:5px;background:#D43425;border-radius:50%}
+.rl .ct{font-weight:700;color:#4A3F8F;background:#F5F2E9;border-radius:9px;padding:0 7px;margin-right:6px;font-size:12px}
+/* ── paper field: the wallet ── */
+.field{position:absolute;inset:64px 0 0 92px;background:#F5F2E9;padding:30px 26px 24px}
+.field::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:#101C3A;opacity:.15}
+.row{display:flex;gap:18px}
+.wallet{height:240px}
+.coupon{position:relative;width:396px;background:#F5F2E9;border:1px solid #101C3A;border-radius:0 0 6px 6px;padding:24px 18px 10px}
+.coupon .tab{position:absolute;top:0;right:16px;transform:translateY(-50%);background:#101C3A;color:#F5F2E9;font-weight:800;font-size:14px;padding:7px 18px;border-radius:5px;letter-spacing:.5px}
+.coupon .fig{font-size:12.5px;font-weight:700;color:#4A3F8F;margin-top:14px}
+.coupon .exam{font-size:19px;font-weight:800;color:#101C3A;margin-top:18px;line-height:1.5}
+.coupon .d{font-size:13px;font-weight:700;color:#4A3F8F;margin-top:8px}
+.leg{position:absolute;bottom:0;right:0;left:0;border-top:1px dashed rgba(16,28,58,.4);text-align:center;font-size:11px;color:#4A3F8F;padding:5px 0;font-weight:700}
+.stamp{display:inline-block;color:#D43425;border:2px solid #D43425;border-radius:3px;padding:2px 10px;font-size:13px;font-weight:800;transform:rotate(-7deg);margin-right:10px;vertical-align:middle}
+.voided{border:1.5px dashed #4A3F8F}
+.voided .tab{background:#F5F2E9;color:#4A3F8F;border:1px dashed #4A3F8F;font-weight:700}
+.voided .leg{opacity:.6}
+.note{margin-top:20px;font-size:13px;color:#101C3A;display:flex;align-items:center;gap:8px}
+.note svg{flex:none}
+.note i{font-style:normal;color:#4A3F8F;font-weight:700}
+.stubs{margin-top:26px}
+.sec{font-size:13px;font-weight:800;color:#101C3A;margin-bottom:10px}
+.sec i{font-style:normal;font-weight:700;color:#4A3F8F;font-size:12px;margin-right:8px}
+.stubrow{display:flex;border:1px solid #101C3A;border-radius:6px;overflow:hidden;height:170px}
+.stub{flex:1;position:relative;padding:18px 12px 14px}
+.stub+.stub{border-right:1px solid rgba(16,28,58,.4)}
+.num{font-size:30px;font-weight:800;color:#4A3F8F;line-height:1}
+.perf{height:10px;background-image:radial-gradient(circle,#101C3A 1px,transparent 1.5px);background-size:8px 8px;opacity:.5;margin:12px 0 14px}
+.time{font-size:12px;font-weight:700;color:#4A3F8F}
+.subj{font-size:15px;font-weight:700;color:#101C3A;margin-top:8px}
+.tick{position:absolute;top:16px;left:12px;width:20px;height:20px;border:2px solid #2F9E44;border-radius:50%}
+.tick::after{content:"";position:absolute;right:4px;top:2px;width:7px;height:3px;background:#2F9E44;transform:rotate(-45deg)}
+.tick::before{content:"";position:absolute;right:2px;top:4px;width:3px;height:8px;background:#2F9E44;transform:rotate(-45deg)}
+.tick span{position:absolute;top:26px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#2F9E44}
+.here{position:absolute;top:34px;left:50%;transform:translateX(-50%) rotate(-10deg);width:64px;height:64px;border:3px double #4A3F8F;border-radius:50%;color:#4A3F8F;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;background:rgba(245,242,233,.55)}
+.absent{margin-top:26px}
+.absentrow{display:flex;gap:18px}
+.absent .stub{height:132px;width:396px;border:1px solid #101C3A;border-radius:6px;padding:14px}
+.absent .aday{font-size:12.5px;font-weight:700;color:#4A3F8F}
+.absent .akey{font-size:14px;font-weight:800;color:#101C3A;margin-top:6px}
+.astamp{position:absolute;right:18px;bottom:12px;color:#D43425;border:2.5px solid #D43425;outline:1.5px solid #D43425;outline-offset:2px;border-radius:3px;padding:3px 12px;font-weight:800;font-size:16px;transform:rotate(-8deg);letter-spacing:1px;background:rgba(245,242,233,.35)}
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="top">
+<div class="app"><b>مدرستي</b><span>بوابة الطالب</span></div>
+<div class="who">اسم الطالب · الخامس العلمي أ · <i>student.demo</i></div>
+</div>
+<div class="rail">
+<div class="rl on">اليوم</div>
+<div class="rl">الجدول</div>
+<div class="rl">الغيابات</div>
+<div class="rl">الدرجات</div>
+<div class="rl">الإشعارات<span class="ct">1</span></div>
+<div class="rl">المحادثة</div>
+</div>
+<div class="field">
+<div class="row wallet">
+<div class="coupon">
+<div class="tab">الشهر الأول</div>
+<div class="fig">مادة واحدة · امتحان واحد</div>
+<div class="exam">اسلامية الوحدة الأولى — الخميس 29/10 <b class="stamp">بعد غد</b></div>
+<div class="leg">العام الدراسي 2025–2026</div>
+</div>
+<div class="coupon voided">
+<div class="tab">منتصف الفصل</div>
+<div class="fig">الموعد غير منشور بعد</div>
+<div class="d">لاحقاً</div>
+<div class="leg">العام الدراسي 2025–2026</div>
+</div>
+<div class="coupon voided">
+<div class="tab">الامتحان النهائي</div>
+<div class="fig">الموعد غير منشور بعد</div>
+<div class="d">لاحقاً</div>
+<div class="leg">العام الدراسي 2025–2026</div>
+</div>
+</div>
+<div class="note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A3F8F" stroke-width="2.4"><path d="M12 2v13M12 15l-4 5M12 15l4 5"/><circle cx="12" cy="4" r="1.6" fill="#4A3F8F"/></svg><b>تثبيت:</b> <span><i>تخصيصات المراجعة:</i> فيزياء 26–31، كيمياء 44–47، أحياء 43–47 مع حل أسئلة الفصل الأول</span></div>
+<div class="stubs">
+<div class="sec">حصص اليوم <i>الثلاثاء 27/10/2026 · الحصة 3 الآن</i></div>
+<div class="stubrow">
+<div class="stub"><div class="num">1</div><div class="perf"></div><div class="time">8:15 – 9:00</div><div class="subj">انكليزي</div><div class="tick"><span>تم</span></div></div>
+<div class="stub"><div class="num">2</div><div class="perf"></div><div class="time">9:05 – 9:50</div><div class="subj">رياضة</div><div class="tick"><span>تم</span></div></div>
+<div class="stub"><div class="num">3</div><div class="perf"></div><div class="time">10:00 – 10:45</div><div class="subj">فيزياء</div><div class="here">الآن</div></div>
+<div class="stub"><div class="num">4</div><div class="perf"></div><div class="time">10:50 – 11:30</div><div class="subj">رياضيات</div></div>
+<div class="stub"><div class="num">5</div><div class="perf"></div><div class="time">11:35 – 12:15</div><div class="subj">كيمياء</div></div>
+<div class="stub"><div class="num">6</div><div class="perf"></div><div class="time">12:20 – 13:00</div><div class="subj">حاسوب</div></div>
+</div>
+</div>
+<div class="absent">
+<div class="sec">سجل الغياب <i>أكتوبر 2026</i></div>
+<div class="absentrow">
+<div class="stub"><div class="aday">21/10 · الأربعاء</div><div class="akey">غياب كامل — جميع الحصص</div><div class="perf"></div><div class="astamp">غائب</div></div>
+<div class="stub"><div class="aday">13/10 · الثلاثاء</div><div class="akey">غياب جزئي — فيزياء · الحصة 3</div><div class="perf"></div><div class="astamp">غائب</div></div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

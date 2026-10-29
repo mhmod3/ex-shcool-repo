@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مدرستي · بوابة الطالب</title>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E1526;--paper:#F5F2E9;--red:#D43425;--green:#1F9D6A;--amber:#E0A428}
+*{box-sizing:border-box}
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:#0E1526}
+#app{width:1440px;height:900px;display:flex;flex-direction:column;color:var(--paper);font-family:Almarai,system-ui,sans-serif;font-size:14px;font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;unicode-bidi:isolate}
+header{flex:0 0 52px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:2px solid var(--paper)}
+.brand{display:flex;align-items:baseline;gap:12px}
+.brand b{font-family:Cairo;font-weight:800;font-size:22px;letter-spacing:.5px}
+.brand small{font-size:12px;opacity:.6}
+.who{font-size:13px;opacity:.85}
+.who .ltr{font-size:11px;opacity:.6;margin-inline-start:8px}
+main{flex:1;display:flex;min-height:0}
+.zone{flex:0 0 520px;padding:38px 30px 0;border-inline-end:2px solid var(--paper)}
+.date{font-family:Cairo;font-weight:900;font-size:96px;line-height:1}
+.dateline{margin-top:10px;font-size:14px;opacity:.8}
+.ruler{margin-top:40px;display:flex;gap:6px;align-items:stretch}
+.cell{flex:1;min-width:0;border:2px solid rgba(245,242,233,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px 2px}
+.cell .n{font-family:Cairo;font-weight:800;font-size:12px;opacity:.45}
+.cell .t{font-size:10px;opacity:.55}
+.cell.done{border-color:transparent;background:rgba(245,242,233,.07)}
+.cell.done .n,.cell.done .t{opacity:.35}
+.cell.next{border:2px solid var(--paper)}
+.cell.up{border-color:rgba(245,242,233,.2)}
+.cell.now{background:var(--paper);border:2px solid var(--paper);color:var(--ink)}
+.cell.now .lbl{font-size:11px;font-weight:700}
+.cell.now .t{opacity:.7;font-weight:700}
+.flag{flex:0 0 100px;border:2px solid var(--red);display:flex;flex-direction:column;justify-content:center;gap:5px;padding:8px 10px;color:var(--red)}
+.flag .fl{font-size:12px;font-weight:700}
+.flag .fs{font-size:11px}
+.work{flex:1;min-width:0;padding:38px 34px;display:flex;flex-direction:column}
+h2{font-family:Cairo;font-weight:800;font-size:19px;margin:0}
+.sub{font-size:12px;opacity:.55;margin:4px 0 16px}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:start;font-size:12px;font-weight:700;padding:10px;border-bottom:2px solid var(--paper);opacity:.75}
+tbody td{padding:13px 10px;border-bottom:1px solid rgba(245,242,233,.12)}
+tbody td:first-child{font-family:Cairo;font-weight:800;width:60px}
+tr.now td{background:var(--paper);color:var(--ink);font-weight:700}
+tr.now td:first-child{position:relative;padding-inline-start:16px}
+tr.now td:first-child::before{content:"";position:absolute;top:50%;inset-inline-start:0;width:4px;height:20px;transform:translateY(-50%);background:var(--red)}
+.chip-now{display:inline-block;margin-inline-start:8px;background:var(--red);color:var(--paper);font-size:10px;font-weight:700;padding:2px 8px}
+.exam{margin-top:24px;border:3px solid var(--red);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.esubj{font-family:Cairo;font-weight:800;font-size:19px;display:block}
+.emeta{font-size:13px;opacity:.85;display:block;margin-top:4px}
+.chip{flex:0 0 auto;background:var(--red);color:var(--paper);font-size:14px;font-weight:700;padding:6px 16px}
+.rail{flex:0 0 210px;border-inline-start:1px solid rgba(245,242,233,.5);padding:38px 0}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 20px 11px 14px;font-size:15px;opacity:.55;position:relative;margin-bottom:4px}
+.nav.active{opacity:1;font-weight:700}
+.nav.active::after{content:"";position:absolute;top:7px;bottom:7px;inset-inline-start:0;width:3px;background:var(--red)}
+.cnt{width:20px;height:20px;border:1.5px solid var(--paper);border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+footer{flex:0 0 200px;border-top:2px solid var(--paper);display:flex}
+.attend{flex:0 0 430px;padding:0 30px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.aline{display:flex;align-items:center;gap:10px;color:var(--green);font-weight:700;font-size:16px}
+.asub{font-size:12px;color:var(--amber);display:flex;gap:8px;align-items:center;line-height:1.7}
+.asub::before{content:"";flex:0 0 8px;width:8px;height:8px;background:var(--amber)}
+.asub.dim{color:rgba(245,242,233,.55)}
+.asub.dim::before{display:none}
+.notes{flex:1;padding:0 30px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.note.open{border:2px solid rgba(245,242,233,.35);padding:12px 16px}
+.nhead{display:flex;align-items:center;gap:10px}
+.nhead b{font-size:14px}
+.tag{border:1px solid rgba(245,242,233,.5);font-size:10px;font-style:normal;padding:1px 6px;opacity:.8}
+.nmeta{font-size:11px;opacity:.55}
+.nbody{margin:8px 0 0;font-size:13px;line-height:1.8;opacity:.9}
+.note.dimmed{display:flex;align-items:center;gap:10px;opacity:.4;padding:2px 16px;font-size:13px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><b>مدرستي</b><small>بوابة الطالب</small></div>
+    <div class="who">اسم الطالب · الخامس العلمي أ <span class="ltr">student.demo</span></div>
+  </header>
+  <main>
+    <section class="zone">
+      <div class="date ltr">27/10</div>
+      <div class="dateline">الثلاثاء · امتحان الشهر الأول</div>
+      <div class="ruler">
+        <div class="cell done"><span class="n">1</span><span class="t ltr">8:15–9:00</span></div>
+        <div class="cell done"><span class="n">2</span><span class="t ltr">9:05–9:50</span></div>
+        <div class="cell now"><span class="lbl">الحالية: فيزياء</span><span class="t ltr">10:00–10:45</span></div>
+        <div class="cell next"><span class="n">4</span><span class="t ltr">10:50–11:30</span></div>
+        <div class="cell up"><span class="n">5</span><span class="t ltr">11:35–12:15</span></div>
+        <div class="cell up"><span class="n">6</span><span class="t ltr">12:20–13:00</span></div>
+        <div class="flag">
+          <svg width="16" height="24" viewBox="0 0 16 24" aria-hidden="true"><path d="M3 1v23" stroke="#D43425" stroke-width="2"/><path d="M3 2h11l-4 4 4 4H3z" fill="#D43425"/></svg>
+          <span class="fl">امتحان <span class="ltr">29/10</span></span>
+          <span class="fs">اسلامية</span>
+        </div>
+      </div>
+    </section>
+    <section class="work">
+      <h2>حصص اليوم</h2>
+      <p class="sub">الثلاثاء <span class="ltr">27/10/2026</span> · 6 حصص · الخامس العلمي أ</p>
+      <table>
+        <thead><tr><th>الحصة</th><th>المادة</th><th>المعلم</th><th>الوقت</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>انكليزي</td><td>معلم 3</td><td class="ltr">8:15–9:00</td></tr>
+          <tr><td>2</td><td>رياضة</td><td>معلم 6</td><td class="ltr">9:05–9:50</td></tr>
+          <tr class="now"><td>3</td><td>فيزياء <span class="chip-now">الآن</span></td><td>معلم 5</td><td class="ltr">10:00–10:45</td></tr>
+          <tr><td>4</td><td>رياضيات</td><td>معلم 4</td><td class="ltr">10:50–11:30</td></tr>
+          <tr><td>5</td><td>كيمياء</td><td>معلم 9</td><td class="ltr">11:35–12:15</td></tr>
+          <tr><td>6</td><td>حاسوب</td><td>معلم 8</td><td class="ltr">12:20–13:00</td></tr>
+        </tbody>
+      </table>
+      <div class="exam">
+        <div><b class="esubj">اسلامية · الوحدة الأولى</b><span class="emeta">الخميس <span class="ltr">29/10</span> · امتحان الشهر الأول · مادة واحدة</span></div>
+        <span class="chip">بعد غد</span>
+      </div>
+    </section>
+    <aside class="rail">
+      <nav>
+        <span class="nav active">اليوم</span>
+        <span class="nav">الجدول</span>
+        <span class="nav">الغيابات</span>
+        <span class="nav">الدرجات</span>
+        <span class="nav">الإشعارات <i class="cnt">1</i></span>
+        <span class="nav">المحادثة <i class="dot"></i></span>
+      </nav>
+    </aside>
+  </main>
+  <footer>
+    <section class="attend">
+      <div class="aline">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="#1F9D6A" stroke-width="2"/><path d="m6 10.5 2.6 2.6L14 7" fill="none" stroke="#1F9D6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        غياب اليوم: لا يوجد
+      </div>
+      <div class="asub">أكتوبر 2026 · غياب كامل: الأربعاء <span class="ltr">21/10</span> (6 حصص) · غياب جزئي: الثلاثاء <span class="ltr">13/10</span> (فيزياء، حصة 3)</div>
+      <div class="asub dim">الإجازات: 0 · الأعذار: 0 · اليوم: حاضر</div>
+    </section>
+    <section class="notes">
+      <div class="note open">
+        <div class="nhead"><b>تخصيصات المراجعة</b><i class="tag">غير مقروء</i><span class="nmeta ltr">2026-10-26 · 15:30</span> · الخامس العلمي أ</div>
+        <p class="nbody">فيزياء صفحات 26–31، كيمياء صفحات 44–47</p>
+        <p class="nbody">أحياء صفحات 43–47، مع حل أسئلة الفصل الأول</p>
+      </div>
+      <div class="note dimmed"><b>الدرجات</b><span>لا توجد درجات معلنة حاليًا</span></div>
+    </section>
+  </footer>
+</div>
+</body>
+</html>

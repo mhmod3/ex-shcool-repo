@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مدرستي · بوابة الطالب — خريطة الفلقيات</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400,800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:#F5F1E4;font-family:'Almarai',sans-serif;color:#2C2E2A}
+#frame{position:relative;width:1440px;height:900px;overflow:hidden}
+header{position:absolute;top:0;right:0;left:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:2px solid #2C2E2A;z-index:3}
+.brand{font-weight:800;font-size:24px;display:flex;align-items:baseline;gap:12px}
+.brand small{font-weight:400;font-size:13px}
+.student{font-size:14px}
+svg.map{position:absolute;inset:0;z-index:1}
+.today{position:absolute;left:810px;top:330px;width:440px;height:280px;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
+.today h2{margin:0;font-size:34px;font-weight:800;line-height:1.1}
+.now{margin:0;font-size:18px}
+.exams{display:flex;flex-direction:column;align-items:center;gap:8px}
+.pill{background:#FF705D;font-size:13px;padding:6px 14px;border-radius:999px}
+.cap{position:relative;display:inline-flex;align-items:center;justify-content:center;background:#F5E211;border:2px solid #2C2E2A;border-radius:999px;font-weight:800;font-size:15px;padding:8px 20px}
+.cap.coral{background:#FF705D}
+.cap.active{position:absolute;left:540px;top:436px;z-index:4}
+.chip{position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;background:#2C2E2A}
+.attend{margin:0;font-size:15px;display:flex;align-items:center;gap:8px}
+.check{color:#6FBF5B;font-size:18px;font-weight:800}
+.hint{position:absolute;bottom:14px;right:0;left:0;margin:0;text-align:center;font-size:13px;z-index:3}
+</style>
+</head>
+<body>
+<div id="frame">
+<header>
+<div class="brand">مدرستي <small>بوابة الطالب</small></div>
+<div class="student">اسم الطالب · الخامس العلمي أ</div>
+</header>
+<svg class="map" viewBox="0 0 1440 900" width="1440" height="900">
+<path fill="#8ED462" stroke="#2C2E2A" stroke-width="2" d="M1440,120 C1330,95 1150,70 1000,85 C830,102 690,180 630,330 C585,440 590,590 660,700 C730,810 900,860 1080,850 C1260,840 1400,800 1440,760 Z"/>
+<ellipse cx="1030" cy="470" rx="250" ry="205" fill="#F5F1E4" stroke="#2C2E2A" stroke-width="2"/>
+<path fill="#2BA0FF" stroke="#2C2E2A" stroke-width="2" d="M292,66 C296,120 330,168 420,182 C510,196 610,175 632,120 C645,90 640,66 632,66 Z"/>
+<path fill="#FF705D" stroke="#2C2E2A" stroke-width="2" d="M0,96 C110,80 230,95 275,165 C315,230 280,310 190,328 C110,342 40,330 0,300 Z"/>
+<path fill="#F5E211" stroke="#2C2E2A" stroke-width="2" d="M0,392 C100,368 190,395 205,460 C218,520 150,556 70,550 C30,546 8,520 0,496 Z"/>
+<path fill="#EBC1FF" stroke="#2C2E2A" stroke-width="2" d="M0,790 C120,768 260,780 305,835 C330,872 260,900 140,900 L0,900 Z"/>
+<path fill="#6FBF5B" stroke="#2C2E2A" stroke-width="2" d="M340,900 C330,842 375,786 460,784 C540,782 572,835 560,900 Z"/>
+<g font-family="Almarai,sans-serif" font-weight="800" font-size="30" fill="#2C2E2A" text-anchor="middle">
+<text x="465" y="138">الجدول</text>
+<text x="150" y="215">الغيابات</text>
+<text x="98" y="472">الإشعارات</text>
+<text x="150" y="848">الدرجات</text>
+<text x="450" y="852">المحادثة</text>
+</g>
+</svg>
+<div class="today">
+<h2>الثلاثاء 27/10</h2>
+<p class="now">الحصة الآن: فيزياء · 10:00–10:45</p>
+<div class="exams">
+<span class="pill">بعد غد: امتحان اسلامية — 29/10</span>
+<span class="cap coral">الامتحانات</span>
+</div>
+<p class="attend">غياب اليوم: لا يوجد <span class="check">✓</span></p>
+</div>
+<span class="cap active"><i class="chip"></i>اليوم</span>
+<p class="hint">اللوحة الفاعلة: اليوم — اضغط على أي فلكة للانتقال</p>
+</div>
+</body>
+</html>

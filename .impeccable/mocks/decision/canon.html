@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>مدرستي — بوابة الطالب</title>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:#F9FAFB;font-family:'Almarai',sans-serif;font-size:15px;line-height:1.5;color:#111827}
+.frame{width:1440px;height:900px;display:flex;flex-direction:column}
+/* الشريط العلوي */
+.topbar{flex:0 0 57px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:30px;height:30px;border-radius:6px;background:#2563EB;color:#fff;display:flex;align-items:center;justify-content:center}
+.brand-name{font-size:18px;font-weight:700}
+.sep{font-size:15px;color:#E5E7EB}
+.crumb{font-size:13px;color:#6B7280}
+.top-actions{display:flex;align-items:center;gap:16px}
+.student{display:flex;align-items:center;gap:8px;border:1px solid #2563EB;border-radius:999px;background:#fff;padding:4px 14px 4px 6px;font-size:13px;font-weight:700;color:#2563EB}
+.avatar{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#E5E7EB;color:#6B7280;display:flex;align-items:center;justify-content:center}
+.logout{font-size:13px;color:#6B7280}
+/* التخطيط */
+.layout{flex:1;min-height:0;display:flex;gap:16px;padding:16px}
+.main{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px}
+.sidebar{flex:0 0 240px;width:240px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:16px}
+/* البطاقات */
+.card{background:#fff;border:1px solid #E5E7EB;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:16px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.card-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.card-head h2{margin:0;font-size:15px;font-weight:700}
+.sub{font-size:13px;color:#6B7280}
+/* حصص اليوم */
+.periods{list-style:none;margin:0;padding:0;flex:1;display:flex;flex-direction:column;justify-content:space-between}
+.pd{display:flex;align-items:center;gap:10px;height:46px;border:1px solid #E5E7EB;border-radius:8px;padding:0 12px}
+.pd .t{flex:0 0 96px;width:96px;direction:ltr;font-size:13px;color:#6B7280}
+.pd .s{flex:1}
+.pd .g{font-size:13px;color:#6B7280}
+.pd.now{background:#EFF6FF;border-color:#BFDBFE}
+.now-tag{background:#2563EB;color:#fff;font-size:13px;font-weight:700;border-radius:999px;padding:3px 10px}
+/* الامتحان القادم */
+.exam-name{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700}
+.chip-blue{background:#EFF6FF;color:#2563EB;font-size:13px;font-weight:700;border-radius:999px;padding:3px 10px}
+.exam-date{margin:6px 0 0;font-size:13px;color:#6B7280}
+.btn{margin-top:auto;background:#2563EB;color:#fff;font-size:13px;font-weight:700;border-radius:8px;padding:9px 14px;text-align:center}
+/* الغياب */
+.ok{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:#059669}
+.att{margin-top:auto}
+.att .label{margin:0 0 4px;font-size:13px;color:#6B7280}
+.att-row{display:flex;justify-content:space-between;font-size:13px;color:#6B7280;border-top:1px solid #F3F4F6;padding:8px 0}
+/* الإشعارات */
+.note{border:1px solid #E5E7EB;background:#F9FAFB;border-radius:8px;padding:12px}
+.note p{margin:10px 0 0;font-size:15px;line-height:1.8}
+.chip-gray{display:inline-block;background:#E5E7EB;color:#6B7280;font-size:13px;border-radius:999px;padding:2px 10px}
+/* القائمة الجانبية */
+.nav-label{margin:2px 0 8px;font-size:13px;color:#6B7280}
+.nav{display:flex;flex-direction:column;gap:4px}
+.item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:15px;color:#6B7280}
+.item.active{background:#EFF6FF;color:#2563EB;font-weight:700}
+.item.active .ic{color:#2563EB}
+.badge{margin-inline-start:auto;background:#E5E7EB;color:#6B7280;font-size:13px;min-width:24px;text-align:center;border-radius:999px;padding:1px 8px}
+.ic{width:16px;height:16px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2}
+.avatar .ic{width:12px;height:12px}
+.ok .ic{width:18px;height:18px}
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo"><svg class="ic" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+      <span class="brand-name">مدرستي</span>
+      <span class="sep">/</span>
+      <span class="crumb">بوابة الطالب</span>
+    </div>
+    <div class="top-actions">
+      <span class="student"><span class="avatar"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg></span>اسم الطالب — الخامس العلمي أ</span>
+      <span class="logout">تسجيل الخروج</span>
+    </div>
+  </header>
+  <div class="layout">
+    <main class="main">
+      <section class="card">
+        <div class="card-head"><h2>حصص اليوم</h2><span class="sub">الثلاثاء 27/10/2026</span></div>
+        <ul class="periods">
+          <li class="pd"><span class="t">8:30 – 9:15</span><span class="s">انكليزي</span><span class="g">أ. سارة</span></li>
+          <li class="pd"><span class="t">9:15 – 10:00</span><span class="s">رياضة</span><span class="g">أ. رعد</span></li>
+          <li class="pd now"><span class="t">10:00 – 10:45</span><span class="s">فيزياء</span><span class="g">أ. فاضل</span><span class="now-tag">الآن</span></li>
+          <li class="pd"><span class="t">10:45 – 11:30</span><span class="s">رياضيات</span><span class="g">أ. هدى</span></li>
+          <li class="pd"><span class="t">11:30 – 12:15</span><span class="s">كيمياء</span><span class="g">أ. منى</span></li>
+          <li class="pd"><span class="t">12:15 – 13:00</span><span class="s">حاسوب</span><span class="g">أ. حسن</span></li>
+        </ul>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>الامتحان القادم</h2></div>
+        <div class="exam-name">اسلامية الوحدة الأولى<span class="chip-blue">بعد غد</span></div>
+        <p class="exam-date">الخميس 29/10/2026</p>
+        <span class="btn">عرض جدول الامتحانات</span>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>الغياب</h2></div>
+        <div class="ok"><svg class="ic" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>لا غيبة اليوم</div>
+        <div class="att">
+          <p class="label">أكتوبر 2026</p>
+          <div class="att-row"><span>21/10</span><span>غياب كامل</span></div>
+          <div class="att-row"><span>13/10</span><span>غياب جزئي (فيزياء)</span></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>الإشعارات</h2></div>
+        <div class="note">
+          <span class="chip-gray">مُثبّتة</span>
+          <p>تخصيصات المراجعة: فيزياء 26–31، كيمياء 44–47، أحياء 43–47</p>
+        </div>
+      </section>
+    </main>
+    <aside class="sidebar">
+      <p class="nav-label">القائمة</p>
+      <nav class="nav">
+        <span class="item active"><svg class="ic" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>اليوم</span>
+        <span class="item"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>الجدول</span>
+        <span class="item"><svg class="ic" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>الغيابات</span>
+        <span class="item"><svg class="ic" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>الدرجات</span>
+        <span class="item"><svg class="ic" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>الإشعارات<span class="badge">1</span></span>
+        <span class="item"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>المحادثة</span>
+      </nav>
+    </aside>
+  </div>
+</div>
+</body>
+</html>

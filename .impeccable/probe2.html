@@ -1,0 +1,414 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0D1420">
+    <title>بوابة الطالب — مدرستي</title>
+
+    <!-- PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="مدرستي">
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/icon-32.png">
+    <link rel="apple-touch-icon" href="./images/icon-192.png">
+
+    <!-- Type: Cairo (display) + Almarai (UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+
+    <!-- Icon system: one stroke weight, 24 grid -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+        <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 9.5h16M4 15h16M9.5 4v16M15 4v16"/></symbol>
+        <symbol id="i-absence" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M6 18 18 6"/></symbol>
+        <symbol id="i-grades" viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/><path d="m17.5 15.5 2 2 2.5-3"/></symbol>
+        <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z"/><path d="M10 19.5a2 2 0 0 0 4 0"/></symbol>
+        <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5.5h16v11H8l-4 3.5v-14.5Z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+        <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h.09a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1Z"/></symbol>
+        <symbol id="i-pin" viewBox="0 0 24 24"><path d="M14 3.5 20.5 10 17 11l-4.5 4.5L12 19.5 9.5 17 5 12.5 3.5 14 3 10Z"/></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+        <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4"/><path d="M6 4.5h12l-2.5 4L18 12H6"/></symbol>
+        <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+        <symbol id="i-send" viewBox="0 0 24 24"><path d="M20 4 10.5 13.5M20 4l-6 16-3.5-7L4 9.5 20 4Z"/></symbol>
+        <symbol id="i-image" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="m5 18 5-5 4 4 2.5-2.5L20 18"/></symbol>
+        <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6.5h12M8 12h12M8 17.5h12"/><path d="M4 6.5h.5M4 12h.5M4 17.5h.5"/></symbol>
+    </svg>
+
+    <a class="skip-link" href="#main">تخطي إلى المحتوى</a>
+
+    <header class="topbar">
+        <div class="topbar-brand">
+            <img src="./images/icon-32.png" alt="" width="24" height="24">
+            <strong>مدرستي</strong>
+            <span>بوابة الطالب</span>
+        </div>
+        <div class="topbar-user">
+            <span>اسم الطالب · الخامس العلمي أ</span>
+            <a href="#" id="logout-link" class="topbar-logout">خروج</a>
+        </div>
+    </header>
+
+    <div class="shell">
+        <!-- Desktop navigation rail -->
+        <nav class="rail" aria-label="لوحات البوابة">
+            <button class="rail-item is-active" data-goto="panel-today">
+                <svg class="ic"><use href="#i-clock"/></svg><span>اليوم</span>
+            </button>
+            <button class="rail-item" data-goto="panel-schedule">
+                <svg class="ic"><use href="#i-grid"/></svg><span>الجدول</span>
+            </button>
+            <button class="rail-item" data-goto="panel-absence">
+                <svg class="ic"><use href="#i-absence"/></svg><span>الغياب</span>
+            </button>
+            <button class="rail-item" data-goto="panel-grades">
+                <svg class="ic"><use href="#i-grades"/></svg><span>الدرجات</span>
+            </button>
+            <button class="rail-item" data-goto="panel-notifications">
+                <svg class="ic"><use href="#i-bell"/></svg><span>الإشعارات</span>
+                <em class="count" data-unread-count>1</em>
+            </button>
+            <button class="rail-item" data-goto="panel-chat">
+                <svg class="ic"><use href="#i-chat"/></svg><span>المحادثة</span>
+            </button>
+            <button class="rail-item" data-goto="panel-settings">
+                <svg class="ic"><use href="#i-gear"/></svg><span>الإعدادات</span>
+            </button>
+        </nav>
+
+        <main class="stage" id="main">
+
+            <!-- Signature zone: the day, measured on the period ruler -->
+            <section class="dayhead" aria-label="حالة اليوم">
+                <div class="dayhead-date">
+                    <span class="date-num">27/10</span>
+                    <span class="date-meta">الثلاثاء</span>
+                </div>
+                <p class="nowline">
+                    <span class="nowline-label">الحصة الآن</span>
+                    <strong>فيزياء</strong>
+                    <span class="nowline-time" dir="ltr">10:00–10:45</span>
+                </p>
+            </section>
+
+            <div class="ruler" role="list" aria-label="حصص اليوم الست">
+                <div class="seg seg-done" role="listitem">
+                    <span class="seg-no">1</span><span class="seg-time" dir="ltr">8:15–9:00</span>
+                </div>
+                <div class="seg seg-done" role="listitem">
+                    <span class="seg-no">2</span><span class="seg-time" dir="ltr">9:05–9:50</span>
+                </div>
+                <div class="seg seg-now" role="listitem" aria-current="step">
+                    <span class="seg-subject">فيزياء</span><span class="seg-time" dir="ltr">10:00–10:45</span>
+                    <em class="seg-now-tag">الآن</em>
+                </div>
+                <div class="seg seg-next" role="listitem">
+                    <span class="seg-no">4</span><span class="seg-time" dir="ltr">10:50–11:30</span>
+                </div>
+                <div class="seg seg-idle" role="listitem">
+                    <span class="seg-no">5</span><span class="seg-time" dir="ltr">11:35–12:15</span>
+                </div>
+                <div class="seg seg-idle" role="listitem">
+                    <span class="seg-no">6</span><span class="seg-time" dir="ltr">12:20–1:00</span>
+                </div>
+                <div class="ruler-flag" data-goto="panel-schedule" data-subtab="exams" role="button" tabindex="0" aria-label="بعد غد امتحان اسلامية 29/10">
+                    <svg class="ic"><use href="#i-flag"/></svg>
+                    <span class="ruler-flag-text">بعد غد · امتحان اسلامية</span>
+                    <span class="ruler-flag-date" dir="ltr">29/10</span>
+                </div>
+            </div>
+
+            <!-- Tab strip (primary switcher, keyboard APG pattern) -->
+            <div class="tabstrip" role="tablist" aria-label="لوحات بوابة الطالب">
+                <button type="button" class="tab is-active" data-panel="panel-today" role="tab" id="tab-today" aria-controls="panel-today" aria-selected="true">اليوم</button>
+                <button type="button" class="tab" data-panel="panel-schedule" role="tab" id="tab-schedule" aria-controls="panel-schedule" aria-selected="false" tabindex="-1">الجدول</button>
+                <button type="button" class="tab" data-panel="panel-absence" role="tab" id="tab-absence" aria-controls="panel-absence" aria-selected="false" tabindex="-1">الغياب</button>
+                <button type="button" class="tab" data-panel="panel-grades" role="tab" id="tab-grades" aria-controls="panel-grades" aria-selected="false" tabindex="-1">الدرجات</button>
+                <button type="button" class="tab" data-panel="panel-notifications" role="tab" id="tab-notifications" aria-controls="panel-notifications" aria-selected="false" tabindex="-1">الإشعارات<em class="tab-count" data-unread-count>1</em></button>
+                <button type="button" class="tab" data-panel="panel-chat" role="tab" id="tab-chat" aria-controls="panel-chat" aria-selected="false" tabindex="-1">المحادثة</button>
+                <button type="button" class="tab" data-panel="panel-settings" role="tab" id="tab-settings" aria-controls="panel-settings" aria-selected="false" tabindex="-1">الإعدادات</button>
+            </div>
+
+            <!-- ===== Panel: today ===== -->
+            <section class="panel is-active" id="panel-today" role="tabpanel" aria-labelledby="tab-today" tabindex="0">
+                <h2>حصص اليوم</h2>
+                <div class="classlist">
+                    <div class="crow"><span class="c-no">1</span><span class="c-subject">انكليزي</span><span class="c-teacher">معلم 3</span><span class="c-time" dir="ltr">8:15–9:00</span><span class="c-state st-done">تمت</span></div>
+                    <div class="crow"><span class="c-no">2</span><span class="c-subject">رياضة</span><span class="c-teacher">معلم 6</span><span class="c-time" dir="ltr">9:05–9:50</span><span class="c-state st-done">تمت</span></div>
+                    <div class="crow is-now"><span class="c-no">3</span><span class="c-subject">فيزياء</span><span class="c-teacher">معلم 5</span><span class="c-time" dir="ltr">10:00–10:45</span><span class="c-state st-now">الآن</span></div>
+                    <div class="crow"><span class="c-no">4</span><span class="c-subject">رياضيات</span><span class="c-teacher">معلم 4</span><span class="c-time" dir="ltr">10:50–11:30</span><span class="c-state st-next">التالية</span></div>
+                    <div class="crow"><span class="c-no">5</span><span class="c-subject">كيمياء</span><span class="c-teacher">معلم 9</span><span class="c-time" dir="ltr">11:35–12:15</span><span class="c-state st-idle">—</span></div>
+                    <div class="crow"><span class="c-no">6</span><span class="c-subject">حاسوب</span><span class="c-teacher">معلم 8</span><span class="c-time" dir="ltr">12:20–1:00</span><span class="c-state st-idle">—</span></div>
+                </div>
+
+                <h2>الامتحان القادم</h2>
+                <div class="examline">
+                    <span class="chip chip-red">بعد غد</span>
+                    <span class="examline-text">اسلامية الوحدة الأولى — الخميس 29/10 · امتحان الشهر الأول</span>
+                    <button type="button" class="linkbtn" data-goto="panel-schedule" data-subtab="exams">عرض الجدول</button>
+                </div>
+
+                <div class="attline">
+                    <svg class="ic ic-green"><use href="#i-check"/></svg>
+                    <span>الغياب اليوم: <strong>لا يوجد</strong></span>
+                </div>
+
+                <h2>معلّق عليك</h2>
+                <article class="note is-pinned is-unread">
+                    <div class="note-head">
+                        <svg class="ic"><use href="#i-pin"/></svg>
+                        <span class="note-title">تخصيصات الغد</span>
+                        <em class="chip chip-red chip-sm">جديد</em>
+                    </div>
+                    <div class="note-meta"><span dir="ltr">2026-10-26 · 15:30</span> | الخامس العلمي أ</div>
+                    <p class="note-body">فيزياء من صفحة 26 السرعة المتوسطة إلى صفحة 31 السرعة الآنية والانطلاق الآني (مواد داخل). كيمياء من صفحة 44 رنين إلى 47 (مو داخل). أحياء من امتصاص الماء وتركيز المواد الصلبة صفحة 43 إلى 47 داخلة مع حل أسئلة الفصل الأول باستثناء رسمة البلاستيدة (مو داخلة بالحل).</p>
+                </article>
+            </section>
+
+            <!-- ===== Panel: schedule ===== -->
+            <section class="panel" id="panel-schedule" role="tabpanel" aria-labelledby="tab-schedule" tabindex="0" hidden>
+                <div class="subtabs" role="tablist" aria-label="أقسام الجدول">
+                    <button type="button" class="subtab is-active" data-subtab="weekly" role="tab" id="subtab-weekly" aria-selected="true">الشبكة الأسبوعية</button>
+                    <button type="button" class="subtab" data-subtab="exams" role="tab" id="subtab-exams" aria-selected="false" tabindex="-1">الامتحانات</button>
+                </div>
+
+                <div class="subview is-active" id="subview-weekly">
+                    <h2>الشبكة الأسبوعية</h2>
+                    <div class="gridtable-wrap">
+                        <table class="gridtable">
+                            <thead>
+                                <tr>
+                                    <th class="col-period">الحصة</th>
+                                    <th>الأحد</th><th>الإثنين</th><th class="is-today">الثلاثاء</th><th>الأربعاء</th><th>الخميس</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><th class="col-period"><span>1</span><small dir="ltr">8:15–9:00</small></th>
+                                    <td><strong>عربي</strong><small>معلمة 1</small></td>
+                                    <td><strong>احياء</strong><small>معلم 2</small></td>
+                                    <td class="is-today"><strong>انكليزي</strong><small>معلم 3</small></td>
+                                    <td><strong>رياضيات</strong><small>معلم 4</small></td>
+                                    <td><strong>فنية</strong></td>
+                                </tr>
+                                <tr><th class="col-period"><span>2</span><small dir="ltr">9:05–9:50</small></th>
+                                    <td><strong>انكليزي</strong><small>معلم 3</small></td>
+                                    <td><strong>فيزياء</strong><small>معلم 5</small></td>
+                                    <td class="is-today"><strong>رياضة</strong><small>معلم 6</small></td>
+                                    <td><strong>احياء</strong><small>معلم 2</small></td>
+                                    <td><strong>اسلامية</strong><small>معلمة 7</small></td>
+                                </tr>
+                                <tr><th class="col-period"><span>3</span><small dir="ltr">10:00–10:45</small></th>
+                                    <td><strong>رياضيات</strong><small>معلم 4</small></td>
+                                    <td><strong>عربي</strong><small>معلمة 1</small></td>
+                                    <td class="is-today"><strong>فيزياء</strong><small>معلم 5</small><em class="chip chip-amber chip-sm">الآن</em></td>
+                                    <td><strong>عربي</strong><small>معلمة 1</small></td>
+                                    <td><strong>انكليزي</strong><small>معلم 3</small></td>
+                                </tr>
+                                <tr><th class="col-period"><span>4</span><small dir="ltr">10:50–11:30</small></th>
+                                    <td><strong>احياء</strong><small>معلم 2</small></td>
+                                    <td><strong>رياضيات</strong><small>معلم 4</small></td>
+                                    <td class="is-today"><strong>رياضيات</strong><small>معلم 4</small></td>
+                                    <td><strong>فيزياء</strong><small>معلم 5</small></td>
+                                    <td><strong>رياضيات</strong><small>معلم 4</small></td>
+                                </tr>
+                                <tr><th class="col-period"><span>5</span><small dir="ltr">11:35–12:15</small></th>
+                                    <td><strong>رياضة</strong><small>معلم 6</small></td>
+                                    <td><strong>حاسوب</strong><small>معلم 8</small></td>
+                                    <td class="is-today"><strong>كيمياء</strong><small>معلم 9</small></td>
+                                    <td><strong>انكليزي</strong><small>معلم 3</small></td>
+                                    <td><strong>كيمياء</strong><small>معلم 9</small></td>
+                                </tr>
+                                <tr><th class="col-period"><span>6</span><small dir="ltr">12:20–1:00</small></th>
+                                    <td><strong>اسلامية</strong><small>معلمة 7</small></td>
+                                    <td><strong>انكليزي</strong><small>معلم 3</small></td>
+                                    <td class="is-today"><strong>حاسوب</strong><small>معلم 8</small></td>
+                                    <td><strong>كيمياء</strong><small>معلم 9</small></td>
+                                    <td><strong>عربي</strong><small>معلمة 1</small></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="subview" id="subview-exams" hidden>
+                    <h2>امتحان الشهر الأول</h2>
+                    <div class="exam-summary"><span class="chip">المواد: 1</span><span class="chip chip-red">القادم: اسلامية الوحدة الأولى — 29/10</span></div>
+                    <table class="examtable">
+                        <thead><tr><th>المادة</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+                        <tbody>
+                            <tr class="is-upcoming">
+                                <td>اسلامية الوحدة الأولى</td>
+                                <td><span>الخميس</span> <span dir="ltr">29/10/2026</span></td>
+                                <td><span class="chip chip-red">بعد غد</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===== Panel: absence ===== -->
+            <section class="panel" id="panel-absence" role="tabpanel" aria-labelledby="tab-absence" tabindex="0" hidden>
+                <h2>ملخص الغياب</h2>
+                <dl class="statline">
+                    <div><dt>أيام الغياب</dt><dd><span class="dot dot-red"></span>1</dd></div>
+                    <div><dt>حصص متفرقة</dt><dd><span class="dot dot-red"></span>1</dd></div>
+                    <div><dt>الإجازات (أيام، حصص)</dt><dd><span class="dot dot-muted"></span>لا يوجد</dd></div>
+                    <div><dt>حصص إذن</dt><dd><span class="dot dot-muted"></span>0</dd></div>
+                </dl>
+
+                <h3>سجل الغياب — أكتوبر 2026 <span class="total-chip">يومين</span></h3>
+
+                <section class="dayblock" aria-label="الأربعاء 21 أكتوبر 2026">
+                    <div class="dayblock-head">
+                        <span class="dayblock-date"><strong>الأربعاء</strong> 21 أكتوبر 2026</span>
+                        <span class="chip chip-red">غياب كامل</span>
+                    </div>
+                    <div class="periodlist">
+                        <div class="prow"><span>الحصة 1</span><span class="p-subject">رياضيات</span><span class="p-teacher">معلم 4</span><span class="p-time" dir="ltr">8:15–9:00</span><span class="p-state">غائب</span></div>
+                        <div class="prow"><span>الحصة 2</span><span class="p-subject">احياء</span><span class="p-teacher">معلم 2</span><span class="p-time" dir="ltr">9:05–9:50</span><span class="p-state">غائب</span></div>
+                        <div class="prow"><span>الحصة 3</span><span class="p-subject">عربي</span><span class="p-teacher">معلمة 1</span><span class="p-time" dir="ltr">10:00–10:45</span><span class="p-state">غائب</span></div>
+                        <div class="prow"><span>الحصة 4</span><span class="p-subject">فيزياء</span><span class="p-teacher">معلم 5</span><span class="p-time" dir="ltr">10:50–11:30</span><span class="p-state">غائب</span></div>
+                        <div class="prow"><span>الحصة 5</span><span class="p-subject">انكليزي</span><span class="p-teacher">معلم 3</span><span class="p-time" dir="ltr">11:35–12:15</span><span class="p-state">غائب</span></div>
+                        <div class="prow"><span>الحصة 6</span><span class="p-subject">كيمياء</span><span class="p-teacher">معلم 9</span><span class="p-time" dir="ltr">12:20–1:00</span><span class="p-state">غائب</span></div>
+                    </div>
+                </section>
+
+                <section class="dayblock" aria-label="الثلاثاء 13 أكتوبر 2026">
+                    <div class="dayblock-head">
+                        <span class="dayblock-date"><strong>الثلاثاء</strong> 13 أكتوبر 2026</span>
+                        <span class="chip chip-red">غياب جزئي</span>
+                    </div>
+                    <div class="periodlist">
+                        <div class="prow"><span>الحصة 3</span><span class="p-subject">فيزياء</span><span class="p-teacher">معلم 5</span><span class="p-time" dir="ltr">10:00–10:45</span><span class="p-state">غائب</span></div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ===== Panel: grades ===== -->
+            <section class="panel" id="panel-grades" role="tabpanel" aria-labelledby="tab-grades" tabindex="0" hidden>
+                <h2>الدرجات المعلنة</h2>
+                <div class="empty">
+                    <svg class="ic ic-lg"><use href="#i-list"/></svg>
+                    <p>لا توجد درجات معلنة حاليًا.</p>
+                    <p class="empty-sub">تظهر نتائج الامتحانات والاختبارات هنا فور إعلانها من المدرسة.</p>
+                </div>
+            </section>
+
+            <!-- ===== Panel: notifications ===== -->
+            <section class="panel" id="panel-notifications" role="tabpanel" aria-labelledby="tab-notifications" tabindex="0" hidden>
+                <div class="panel-head">
+                    <h2>الإشعارات</h2>
+                    <button type="button" class="btn btn-ghost" id="mark-all-read" data-action="mark-read">تحديد الكل كمقروء</button>
+                </div>
+                <article class="note is-pinned is-unread" data-nid="279">
+                    <div class="note-head">
+                        <svg class="ic"><use href="#i-pin"/></svg>
+                        <span class="note-title">تخصيصات الغد</span>
+                        <em class="chip chip-red chip-sm">جديد</em>
+                    </div>
+                    <div class="note-meta"><span dir="ltr">2026-10-26 · 15:30</span> | الخامس العلمي أ</div>
+                    <p class="note-body">فيزياء من صفحة 26 السرعة المتوسطة إلى صفحة 31 السرعة الآنية والانطلاق الآني (مواد داخل). كيمياء من صفحة 44 رنين إلى 47 (مو داخل). أحياء من امتصاص الماء وتركيز المواد الصلبة صفحة 43 إلى 47 داخلة مع حل أسئلة الفصل الأول باستثناء رسمة البلاستيدة (مو داخلة بالحل).</p>
+                </article>
+            </section>
+
+            <!-- ===== Panel: chat ===== -->
+            <section class="panel" id="panel-chat" role="tabpanel" aria-labelledby="tab-chat" tabindex="0" hidden>
+                <div class="panel-head">
+                    <h2>محادثة مباشرة مع الإدارة</h2>
+                    <span class="chip">نسخة ثابتة</span>
+                </div>
+                <div class="chat">
+                    <div class="chat-messages" aria-label="رسائل المحادثة">
+                        <div class="chat-day">2026-10-27</div>
+                        <div class="msg mine">
+                            <img class="msg-img" src="./images/logo.png" alt="صورة أُرسلت" loading="lazy">
+                            <p>اني حاطيلي غياب يوم الثلاثاء بدرس الفيزياء واني ولا مره غايب بدرس الفيزياء</p>
+                            <span class="msg-meta">16:06 · تم التسليم</span>
+                        </div>
+                        <div class="msg mine"><p>شنو المشكله ؟</p><span class="msg-meta">16:07 · تم التسليم</span></div>
+                        <div class="msg theirs"><p>نشوفها ان شاء الله باجر</p><span class="msg-meta">17:14</span></div>
+                    </div>
+                    <form class="chat-compose" onsubmit="return false">
+                        <label class="visually-hidden" for="chat-input">اكتب رسالتك</label>
+                        <textarea id="chat-input" rows="2" placeholder="اكتب رسالتك… (Enter للإرسال)" maxlength="4000" disabled></textarea>
+                        <span class="chat-tools">
+                            <button type="button" class="btn btn-ghost btn-icon" aria-label="إرفاق صورة" disabled><svg class="ic"><use href="#i-image"/></svg></button>
+                            <button type="submit" class="btn btn-primary" disabled><svg class="ic"><use href="#i-send"/></svg>إرسال</button>
+                        </span>
+                    </form>
+                    <p class="chat-note">النسخة الثابتة لا ترسل رسائل — المحادثة مع الإدارة تعمل عبر خادم مدرستي فقط. المتبقي اليوم: 3 من 5.</p>
+                </div>
+            </section>
+
+            <!-- ===== Panel: settings ===== -->
+            <section class="panel" id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" tabindex="0" hidden>
+                <h2>قنوات الإشعارات</h2>
+                <div class="setting">
+                    <div class="setting-head"><strong>إشعارات الهاتف (Web Push)</strong><span class="chip chip-muted">لم تفعّل</span></div>
+                    <p class="setting-text">فعّلها ليصلك كل جديد فورًا على جهازك — وتبقى كل الإشعارات متاحة هنا داخل الموقع في أي حال.</p>
+                    <button type="button" class="btn btn-primary" data-static="التفعيل يتم عبر الخادم الأصلي؛ غير متاح في هذه النسخة الثابتة.">تفعيل إشعارات الهاتف</button>
+                </div>
+                <div class="setting">
+                    <div class="setting-head"><strong>إشعارات تيليجرام</strong><span class="chip chip-green">مفعّلة</span></div>
+                    <button type="button" class="btn btn-ghost" data-static="إلغاء الربط يتم عبر الخادم الأصلي؛ غير متاح في هذه النسخة الثابتة.">إلغاء الربط</button>
+                </div>
+
+                <h2>بيانات الحساب</h2>
+                <dl class="info-list">
+                    <div><dt>الاسم</dt><dd>اسم الطالب</dd></div>
+                    <div><dt>اسم المستخدم</dt><dd dir="ltr">student.demo</dd></div>
+                    <div><dt>الصف</dt><dd>الخامس العلمي أ</dd></div>
+                </dl>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Mobile bottom navigation -->
+    <nav class="bottomnav" aria-label="التنقل السفلي">
+        <button class="bn-item is-active" data-goto="panel-today"><svg class="ic"><use href="#i-clock"/></svg><span>اليوم</span></button>
+        <button class="bn-item" data-goto="panel-schedule"><svg class="ic"><use href="#i-grid"/></svg><span>الجدول</span></button>
+        <button class="bn-item" data-goto="panel-absence"><svg class="ic"><use href="#i-absence"/></svg><span>الغياب</span></button>
+        <button class="bn-item" data-goto="panel-grades"><svg class="ic"><use href="#i-grades"/></svg><span>الدرجات</span></button>
+        <button class="bn-item" data-goto="panel-notifications"><svg class="ic"><use href="#i-bell"/></svg><span>الإشعارات</span><em class="count" data-unread-count>1</em></button>
+        <button class="bn-item" data-goto="panel-chat"><svg class="ic"><use href="#i-chat"/></svg><span>المحادثة</span></button>
+        <button class="bn-item" data-goto="panel-settings"><svg class="ic"><use href="#i-gear"/></svg><span>الإعدادات</span></button>
+    </nav>
+
+    <!-- Toasts -->
+    <div class="toasts" aria-live="polite" id="toasts"></div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="عرض الصورة بالحجم الكامل" tabindex="-1" hidden>
+        <button type="button" class="lightbox-close" id="lightbox-close" aria-label="إغلاق"><svg class="ic"><use href="#i-close"/></svg></button>
+        <img id="lightbox-img" src="" alt="صورة بالحجم الكامل">
+    </div>
+
+    <script src="./js/app.js"></script>
+<script>
+window.addEventListener('load', function () {
+  function info(sel) {
+    var el = document.querySelector(sel);
+    if (!el) return sel + ':MISSING';
+    var cs = getComputedStyle(el);
+    var r = el.getBoundingClientRect();
+    return sel + '{d=' + cs.display + ' x=' + Math.round(r.x) + ' y=' + Math.round(r.y) + ' w=' + Math.round(r.width) + ' h=' + Math.round(r.height) + '}';
+  }
+  var parts = [
+    'VW=' + document.documentElement.clientWidth,
+    info('.shell'), info('.stage'), info('.rail'),
+    info('.dayhead'), info('.ruler'), info('.tabstrip'),
+    info('#panel-today'), info('.bottomnav')
+  ];
+  document.title = parts.join(' ## ');
+});
+</script>
+</body>
+</html>
+

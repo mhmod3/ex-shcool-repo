@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مدرستي · بوابة الطالب — «ساعة الحصة»</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700;900&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:#0D1420;color:#E8EDF4;font:400 15px/1.5 Almarai,sans-serif}
+.app{position:absolute;inset:0;width:1440px;height:900px;display:flex;flex-direction:column}
+.top{height:52px;flex:0 0 52px;display:flex;align-items:center;justify-content:space-between;padding:0 34px;border-bottom:1px solid rgba(232,237,244,.1)}
+.brand b{font:900 18px/1 Cairo,sans-serif}
+.brand span{margin-right:12px;font-size:12px;color:rgba(232,237,244,.45)}
+.stu b{font-weight:700}
+.stu span{color:rgba(232,237,244,.55)}
+.mid{flex:1;display:flex;min-height:0}
+main{flex:1;min-width:0;padding:28px 36px 0;display:flex;flex-direction:column}
+.date{font:900 96px/1 Cairo,sans-serif;letter-spacing:-.02em}
+.day{margin-top:6px;font-size:15px;color:rgba(232,237,244,.5)}
+.status{margin-top:16px;display:flex;align-items:center;gap:9px;font-size:15px}
+.dot{width:8px;height:8px;border-radius:50%;background:#F5B83D;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.status .am{font:700 15px Cairo,sans-serif;color:#F5B83D}
+.ruler{position:relative;margin-top:26px;height:58px;display:flex;background:rgba(232,237,244,.03);border:1px solid rgba(232,237,244,.12)}
+.seg{flex:1;position:relative;padding:10px 12px}
+.seg+.seg{border-right:1px solid rgba(232,237,244,.12)}
+.seg .nm{display:block;font:700 13px Almarai,sans-serif}
+.seg .tm{display:block;margin-top:2px;font:400 11px Cairo,sans-serif;color:rgba(232,237,244,.4)}
+.d{background:rgba(232,237,244,.07)}
+.d .nm{color:rgba(232,237,244,.7)}
+.d svg{position:absolute;top:11px;left:12px}
+.now{background:#F5B83D}
+.now .nm{font:900 15px Cairo,sans-serif;color:#0D1420}
+.now .tm{font-weight:700;color:rgba(13,20,32,.7)}
+.nx{outline:1px solid #F5B83D;outline-offset:-1px}
+.nx .k{display:block;font-size:10px;color:rgba(245,184,61,.8)}
+.nx .nm{color:#F5B83D}
+.nx .tm{color:rgba(245,184,61,.55)}
+.dm .nm{color:rgba(232,237,244,.4)}
+.dm .tm{color:rgba(232,237,244,.25)}
+.flag{position:absolute;left:0;top:calc(100% + 9px);display:flex;align-items:center;gap:8px;font-size:12px}
+.flag b{font-weight:700;color:#C23030}
+.flag span{color:rgba(232,237,244,.55)}
+.list{margin-top:40px}
+.list h2{margin:0 0 8px;font:700 15px Cairo,sans-serif}
+.row{display:grid;grid-template-columns:44px 132px 1fr 128px 76px;align-items:center;height:43px;padding:0 12px;border-bottom:1px solid rgba(232,237,244,.09);border-right:3px solid transparent}
+.row .n{font:700 16px Cairo,sans-serif;color:rgba(232,237,244,.45)}
+.row .t{font:400 13px Cairo,sans-serif;color:rgba(232,237,244,.5)}
+.row .s{font-weight:700}
+.row .m{font-size:13px;color:rgba(232,237,244,.45)}
+.row.on{border-right-color:#F5B83D;background:rgba(245,184,61,.05)}
+.chip{justify-self:end;font:700 11px Almarai,sans-serif;background:#F5B83D;color:#0D1420;padding:2px 10px;border-radius:99px}
+.bottom{margin-top:auto;border-top:1px solid rgba(232,237,244,.12);padding:16px 12px 20px;display:flex;flex-direction:column;gap:10px}
+.bl{display:flex;align-items:center;gap:10px;font-size:14px}
+.bl .lb{color:rgba(232,237,244,.5)}
+.bl .sub{font-size:12px;color:rgba(232,237,244,.4)}
+.chip.r{background:#C23030;color:#fff}
+.rail{width:200px;flex:0 0 200px;border-right:1px solid rgba(232,237,244,.1);padding:26px 14px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;padding:11px 12px;font-size:15px;color:rgba(232,237,244,.55);text-decoration:none;border-right:3px solid transparent}
+.nav a .cnt{margin-inline-start:auto;min-width:20px;text-align:center;line-height:17px;font:700 11px Cairo,sans-serif;color:rgba(232,237,244,.6);border:1px solid rgba(232,237,244,.3);border-radius:99px;padding:0 5px}
+.nav a.on{color:#E8EDF4;font-weight:700;border-right-color:#F5B83D;background:rgba(245,184,61,.06)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><b>مدرستي</b><span>بوابة الطالب</span></div>
+    <div class="stu"><b>اسم الطالب</b> <span>· الخامس العلمي أ</span></div>
+  </header>
+  <div class="mid">
+    <main>
+      <div class="date">27/10</div>
+      <div class="day">الثلاثاء</div>
+      <div class="status"><span class="dot"></span><span>الحصة الآن: <b>فيزياء</b> · <span class="am">10:00–10:45</span></span></div>
+      <div class="ruler">
+        <div class="seg d"><span class="nm">انكليزي</span><span class="tm">8:15–9:00</span><svg width="11" height="11" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l4 4 7-8" fill="none" stroke="#2E9E6B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="seg d"><span class="nm">رياضة</span><span class="tm">9:05–9:50</span><svg width="11" height="11" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l4 4 7-8" fill="none" stroke="#2E9E6B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="seg now"><span class="nm">فيزياء</span><span class="tm">10:00–10:45</span></div>
+        <div class="seg nx"><span class="k">التالية</span><span class="nm">رياضيات</span><span class="tm">10:50–11:30</span></div>
+        <div class="seg dm"><span class="nm">كيمياء</span><span class="tm">11:35–12:15</span></div>
+        <div class="seg dm"><span class="nm">حاسوب</span><span class="tm">12:20–13:00</span></div>
+        <div class="flag"><svg width="15" height="13" viewBox="0 0 15 13" aria-hidden="true"><path d="M0 0h15L0 13z" fill="#C23030"/></svg><b>بعد غد:</b><span>امتحان اسلامية — الخميس 29/10</span></div>
+      </div>
+      <section class="list">
+        <h2>حصص اليوم</h2>
+        <div class="row"><span class="n">1</span><span class="t">8:15–9:00</span><span class="s">انكليزي</span><span class="m">معلم 3</span></div>
+        <div class="row"><span class="n">2</span><span class="t">9:05–9:50</span><span class="s">رياضة</span><span class="m">معلم 6</span></div>
+        <div class="row on"><span class="n">3</span><span class="t">10:00–10:45</span><span class="s">فيزياء</span><span class="m">معلم 5</span><span class="chip">الآن</span></div>
+        <div class="row"><span class="n">4</span><span class="t">10:50–11:30</span><span class="s">رياضيات</span><span class="m">معلم 4</span></div>
+        <div class="row"><span class="n">5</span><span class="t">11:35–12:15</span><span class="s">كيمياء</span><span class="m">معلم 9</span></div>
+        <div class="row"><span class="n">6</span><span class="t">12:20–13:00</span><span class="s">حاسوب</span><span class="m">معلم 8</span></div>
+      </section>
+      <footer class="bottom">
+        <div class="bl"><span class="lb">الامتحان القادم:</span><b>اسلامية الوحدة الأولى</b><span class="lb">— الخميس 29/10</span><span class="chip r">بعد غد</span></div>
+        <div class="bl"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l4 4 7-8" fill="none" stroke="#2E9E6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lb">الغياب اليوم:</span><b>لا يوجد</b><span class="sub">أكتوبر: غياب كامل 21/10 · غيبة جزئية 13/10 (فيزياء)</span></div>
+      </footer>
+    </main>
+    <aside class="rail">
+      <nav class="nav">
+        <a class="on" href="#today">اليوم</a>
+        <a href="#timetable">الجدول</a>
+        <a href="#absences">الغيابات</a>
+        <a href="#grades">الدرجات</a>
+        <a href="#notifications">الإشعارات<span class="cnt">1</span></a>
+        <a href="#chat">المحادثة</a>
+      </nav>
+    </aside>
+  </div>
+</div>
+</body>
+</html>

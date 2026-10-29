@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مدرستي · بوابة الطالب — Folio Decision</title>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#4A4A45;--sep:#8A7A5F;--grn:#2F5233;--scar:#7D1D18}
+*{box-sizing:border-box}
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:#F6EFE0;font-family:Almarai,sans-serif;color:var(--ink)}
+.folio{width:1440px;height:900px;padding:30px 40px 0}
+/* top strip */
+.top{display:flex;justify-content:space-between;align-items:flex-end;height:56px;padding-bottom:12px;border-bottom:1px solid rgba(138,122,95,.6)}
+.brand{display:flex;align-items:baseline;gap:14px}
+.brand b{font-family:Amiri,serif;font-weight:700;font-size:36px;line-height:1}
+.brand .sub{font-size:11px;letter-spacing:.32em;color:var(--sep)}
+.student{font-size:12px;letter-spacing:.08em}
+/* phase strip — the folio landmark */
+.phases{display:grid;grid-template-columns:repeat(3,1fr);margin-top:20px}
+.phase{padding:2px 22px 18px}
+.phase+.phase{border-right:1px solid rgba(138,122,95,.45)}
+.mrow{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.sq{width:9px;height:9px;border:1px solid rgba(74,74,69,.5);flex:none}
+.phase.on .sq{border-color:var(--grn);background:var(--grn)}
+.stage{font-family:Amiri,serif;font-weight:700;font-size:27px;line-height:1.1}
+.phase.on .stage{color:var(--grn)}
+.cap{font-size:10px;letter-spacing:.3em;color:var(--sep);margin-top:8px}
+.phase.on .cap{color:var(--grn)}
+/* plates — three fixed-scale leaves, one shared baseline */
+.plates{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:24px;position:relative}
+.plate{height:500px;border:1px solid rgba(138,122,95,.6);display:flex;flex-direction:column;position:relative}
+.base{position:absolute;left:2px;right:2px;bottom:76px;height:1px;background:var(--sep)}
+.phead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px 14px;border-bottom:1px solid rgba(138,122,95,.35)}
+.phead h2{margin:0;font-family:Amiri,serif;font-weight:700;font-size:25px;line-height:1.1}
+.ruler{flex:none}
+/* grades */
+.gb{position:relative;flex:1}
+.scale{position:absolute;left:50%;bottom:76px;transform:translateX(50%)}
+.pc{position:absolute;left:0;right:0;bottom:30px;text-align:center;font-size:11px;letter-spacing:.16em;opacity:.75}
+/* attendance */
+.ab{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:20px 20px 76px}
+.row{display:flex;align-items:flex-start;gap:12px;padding:13px 0 15px;border-bottom:1px solid rgba(138,122,95,.3)}
+.row b{display:block;font-size:14.5px;font-weight:700}
+.row i{display:block;font-style:normal;font-size:12.5px;opacity:.85;margin-top:3px}
+.mk{width:10px;height:10px;background:var(--scar);flex:none;margin-top:3px}
+.tk{width:16px;height:1px;background:var(--scar);flex:none;margin-top:8px}
+.gq{width:10px;height:10px;border:1px solid rgba(74,74,69,.5);flex:none;margin-top:3px}
+.row.dim b{font-weight:400;opacity:.7}
+/* exams */
+.eb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:16px 20px 76px}
+.ex{display:flex;align-items:flex-start;gap:14px}
+.ex b{font-family:Amiri,serif;font-size:27px;font-weight:700;line-height:1.3}
+.ex i{display:block;font-style:normal;font-size:12.5px;opacity:.85;margin-top:6px}
+.tag{display:inline-block;margin-top:14px;font-size:10px;letter-spacing:.34em;color:var(--scar);border:1px solid var(--scar);padding:4px 12px 4px 14px}
+.enote{margin:14px 0 0;font-size:11.5px;opacity:.7;letter-spacing:.04em}
+/* bottom annotation band */
+.anno{margin-top:28px;border-top:1px solid rgba(138,122,95,.6);padding:18px 0 0 220px}
+.anno h3{margin:0;font-family:Amiri,serif;font-style:italic;font-weight:700;font-size:23px;line-height:1.3}
+.seal{display:inline-block;width:10px;height:10px;background:var(--grn);margin-left:12px;vertical-align:2px}
+.anno p{margin:8px 0 0;font-size:12.5px;line-height:1.9;opacity:.9}
+</style>
+</head>
+<body>
+<div class="folio">
+<svg width="0" height="0" style="position:absolute"><defs><g id="rule">
+<line x1="0" y1="6" x2="22" y2="6" stroke="#2F5233" stroke-width="2"/>
+<line x1="28" y1="6" x2="48" y2="6" stroke="#4A4A45" opacity=".4"/>
+<line x1="54" y1="6" x2="72" y2="6" stroke="#4A4A45" opacity=".4"/>
+<line x1="0" y1="2" x2="0" y2="10" stroke="#8A7A5F" opacity=".6"/>
+<line x1="26" y1="2" x2="26" y2="10" stroke="#8A7A5F" opacity=".6"/>
+<line x1="51" y1="2" x2="51" y2="10" stroke="#8A7A5F" opacity=".6"/>
+<line x1="72" y1="2" x2="72" y2="10" stroke="#8A7A5F" opacity=".6"/>
+</g></defs></svg>
+
+<header class="top">
+<div class="brand"><b>مدرستي</b><span class="sub">بوابة الطالب</span></div>
+<div class="student">اسم الطالب · الخامس العلمي أ</div>
+</header>
+
+<section class="phases">
+<div class="phase on"><div class="mrow"><span class="sq"></span></div><div class="stage">الشهر الأول</div><div class="cap">الآن — امتحان واحد</div></div>
+<div class="phase"><div class="mrow"><span class="sq"></span></div><div class="stage">منتصف الفصل</div><div class="cap">مرحلة لاحقة</div></div>
+<div class="phase"><div class="mrow"><span class="sq"></span></div><div class="stage">الامتحان النهائي</div><div class="cap">مرحلة لاحقة</div></div>
+</section>
+
+<section class="plates">
+<div class="base"></div>
+<aside class="plate">
+<div class="phead"><h2>الدرجات</h2><svg class="ruler" width="72" height="12" viewBox="0 0 72 12"><use href="#rule"/></svg></div>
+<div class="gb">
+<svg class="scale" width="150" height="300" viewBox="0 0 150 300">
+<line x1="0" y1="0" x2="150" y2="0" stroke="#8A7A5F" opacity=".8"/>
+<line x1="0" y1="30" x2="150" y2="30" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="60" x2="150" y2="60" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="90" x2="150" y2="90" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="120" x2="150" y2="120" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="150" x2="150" y2="150" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="180" x2="150" y2="180" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="210" x2="150" y2="210" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="240" x2="150" y2="240" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<line x1="0" y1="270" x2="150" y2="270" stroke="#8A7A5F" opacity=".5" stroke-dasharray="1.5 5"/>
+<text x="148" y="20" text-anchor="end" font-family="Almarai,sans-serif" font-size="11" fill="#8A7A5F">50</text>
+<text x="148" y="155" text-anchor="end" font-family="Almarai,sans-serif" font-size="11" fill="#8A7A5F" opacity=".6">25</text>
+<text x="148" y="291" text-anchor="end" font-family="Almarai,sans-serif" font-size="11" fill="#8A7A5F">0</text>
+</svg>
+<div class="pc">لا توجد درجات معلنة حاليًا</div>
+</div>
+</aside>
+<aside class="plate">
+<div class="phead"><h2>الغياب — أكتوبر 2026</h2><svg class="ruler" width="72" height="12" viewBox="0 0 72 12"><use href="#rule"/></svg></div>
+<div class="ab">
+<div class="row"><span class="mk"></span><div><b>21/10 · غيبة كاملة</b><i>الأربعاء — 6 حصص</i></div></div>
+<div class="row"><span class="tk"></span><div><b>13/10 · غيبة جزئية</b><i>الثلاثاء — فيزياء، الحصة 3</i></div></div>
+<div class="row dim"><span class="gq"></span><div><b>إجازات وأذون: لا يوجد</b></div></div>
+</div>
+</aside>
+<aside class="plate">
+<div class="phead"><h2>الامتحانات</h2><svg class="ruler" width="72" height="12" viewBox="0 0 72 12"><use href="#rule"/></svg></div>
+<div class="eb">
+<div class="ex"><span class="mk"></span>
+<div><b>اسلامية الوحدة الأولى</b><i>الخميس 29/10</i><span class="tag">بعد غد</span></div>
+</div>
+<p class="enote">المرحلة: الشهر الأول — مادة واحدة</p>
+</div>
+</aside>
+</section>
+
+<footer class="anno">
+<h3><span class="seal"></span>تخصيصات المراجعة (مُثبّتة)</h3>
+<p>فيزياء 26–31، كيمياء 44–47، أحياء 43–47 مع حل أسئلة الفصل الأول</p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1042 @@
+/* =====================================================
+   مدرستي — بوابة الطالب
+   عالم «ساعة الدرس»: خط اليوم الحي
+   الأرض حبر، الأُمبر = الآن، الأحمر = القادم
+   ===================================================== */
+
+:root {
+    /* Ground */
+    --ink: #0D1420;
+    --ink-2: #121E30;
+    --ink-3: #1A2941;
+    --hair: #24344E;
+    --hair-soft: #1B2A40;
+
+    /* Ink roles */
+    --paper: #E8EDF4;
+    --paper-dim: #C3CCDA;
+    --muted: #8A94A6;
+    --faint: #7C8798;
+
+    /* The one live colour */
+    --amber: #F5B83D;
+    --amber-tint: rgba(245, 184, 61, 0.12);
+
+    /* Attention (exam / absence states) */
+    --red: #C23030;
+    --red-tint: #2A1316;
+    --red-text: #E8988E;
+
+    /* Completion / presence */
+    --green: #4CC48F;
+    --green-dot: #2E9E6B;
+    --green-tint: #12291F;
+
+    /* Type */
+    --f-disp: 'Cairo', 'Almarai', sans-serif;
+    --f-ui: 'Almarai', sans-serif;
+
+    /* Rhythm */
+    --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+    --sp-5: 20px; --sp-6: 28px; --sp-7: 40px;
+    --r-sm: 6px; --r-md: 10px;
+
+    /* Motion (steer 9f2c1d74, motion-signature) */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --stag-step: 24ms;
+    /* Page-turn distance (steer b7e2d94a): also set on .stage so the
+       value resolves whether the transition pseudos inherit from the
+       named element or the transition root. */
+    --vt-slide: 48px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+    background: var(--ink);
+    caret-color: var(--amber);
+    scrollbar-width: thin;
+    scrollbar-color: var(--hair) transparent;
+}
+
+body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-ui);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--hair); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #31445F; }
+
+::selection { background: var(--amber); color: var(--ink); }
+
+:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+
+.skip-link {
+    position: absolute; top: -48px; right: 12px;
+    z-index: 200; padding: 8px 14px;
+    background: var(--amber); color: var(--ink);
+    font-weight: 700; font-size: 13px; border-radius: 0 0 8px 8px;
+    transition: top 0.15s ease-out;
+}
+.skip-link:focus { top: env(safe-area-inset-top, 0px); }
+
+.visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    clip: rect(0 0 0 0); overflow: hidden; white-space: nowrap;
+}
+
+/* ===== Top bar ===== */
+
+.topbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    /* PWA safe areas (adapt): in standalone the top bar extends under the
+       status bar / notch — physical insets, so the notch side is handled
+       regardless of RTL direction. */
+    height: calc(52px + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px)
+             max(20px, env(safe-area-inset-right, 0px)) 0
+             max(20px, env(safe-area-inset-left, 0px));
+    background: var(--ink);
+    border-bottom: 1px solid var(--hair);
+}
+.topbar-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.topbar-brand img { width: 24px; height: 24px; border-radius: 5px; }
+.topbar-brand strong { font-family: var(--f-disp); font-weight: 700; font-size: 16px; }
+.topbar-brand span { font-size: 12px; color: var(--muted); }
+.topbar-user { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--muted); }
+.topbar-logout { display: inline-flex; align-items: center; gap: 7px; color: var(--red-text); text-decoration: none; font-weight: 700; }
+.topbar-logout .ic { width: 17px; height: 17px; }
+.topbar-logout:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ===== Shell: stage + rail ===== */
+
+.shell {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    align-items: start;
+}
+/* RTL grid: column 1 is the right column. Rail on the right, stage on the left,
+   both pinned to row 1 (explicit rows: sparse auto-placement otherwise stacks them). */
+.stage { grid-column: 2; grid-row: 1; }
+.rail { grid-column: 1; grid-row: 1; }
+
+.stage {
+    position: relative;
+    padding: var(--sp-5) 28px var(--sp-7);
+    min-width: 0;
+}
+.dayhead, .ruler-flag, .panel { max-width: 960px; }
+
+.rail {
+    position: sticky; top: calc(52px + env(safe-area-inset-top, 0px));
+    align-self: start;
+    padding: var(--sp-5) 12px;
+    border-inline-end: 1px solid var(--hair);
+    min-height: calc(100vh - 52px);
+}
+.rail-item {
+    position: relative;
+    display: flex; align-items: center; gap: 11px;
+    width: 100%; padding: 10px 12px;
+    background: none; border: none; cursor: pointer;
+    border-radius: var(--r-sm);
+    color: var(--muted); font-family: var(--f-ui); font-size: 14px; font-weight: 400;
+    text-align: start;
+    transition: background 0.15s ease-out, color 0.15s ease-out, transform 0.1s var(--ease-out);
+    margin-bottom: 2px;
+}
+.rail-item:hover { background: var(--ink-2); color: var(--paper-dim); }
+.rail-item:active { transform: scale(0.985); }
+.rail-item.is-active { background: var(--ink-3); color: var(--paper); font-weight: 700; }
+.rail-item.is-active .ic { color: var(--amber); }
+/* Sliding active indicator: an amber bar at the item's inline-end edge —
+   the now-state carries its own mark (steer 9f2c1d74). */
+.rail-item::before {
+    content: "";
+    position: absolute;
+    top: 15px; bottom: 15px;
+    inset-inline-end: 3px;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--amber);
+    opacity: 0;
+    transform: scaleY(0.25);
+    transition: transform 0.25s var(--ease-out), opacity 0.2s ease-out;
+}
+.rail-item.is-active::before { opacity: 1; transform: scaleY(1); }
+.rail-item .count {
+    margin-inline-start: auto;
+    font-style: normal;
+    min-width: 20px; height: 20px; padding: 0 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--red); color: var(--paper);
+    border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1;
+}
+
+/* ===== Day head: the number, centered at the top (live 5199e8e0) ===== */
+
+.dayhead {
+    display: flex; align-items: flex-end; justify-content: center;
+    gap: 16px; flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.dayhead-date {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 12px;
+}
+.date-num {
+    font-family: var(--f-disp); font-weight: 900;
+    font-size: 84px; line-height: 0.95; letter-spacing: -0.02em;
+    color: var(--paper);
+    font-variant-numeric: tabular-nums;
+}
+.date-meta { font-size: 15px; font-weight: 700; color: var(--muted); }
+
+/* ===== Exam flag: the day's attention line ===== */
+
+/* The period ruler band was removed (live a8680017); the flag keeps the
+   ruler's slot under the day head. "Now" is read from the now-line and
+   the amber class row. */
+.ruler-flag {
+    display: flex; align-items: center; gap: 9px;
+    background: var(--red-tint);
+    border: 1px solid rgba(194, 48, 48, 0.55);
+    border-radius: var(--r-sm);
+    padding: 9px 14px;
+    margin: 0 0 8px;
+    color: var(--paper);
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease-out, transform 0.1s var(--ease-out);
+}
+/* Accepted form (live a8680017): start-anchored at content width, not a band. */
+.ruler-flag-compact {
+    width: fit-content;
+    margin-inline-end: auto;
+}
+/* The day head and the exam flag belong to the academic panels: they are
+   hidden on the chat and settings panels, and reappear on every other one
+   (steer 382603f3). :has() reacts to the active panel's `hidden` state,
+   so no behaviour code is involved. */
+.stage:has(#panel-chat:not([hidden])) .dayhead,
+.stage:has(#panel-chat:not([hidden])) .ruler-flag,
+.stage:has(#panel-settings:not([hidden])) .dayhead,
+.stage:has(#panel-settings:not([hidden])) .ruler-flag {
+    display: none;
+}
+.ruler-flag .ic { color: var(--red-text); }
+.ruler-flag-date {
+    color: var(--red-text);
+    font-variant-numeric: tabular-nums;
+    margin-inline-start: auto;
+    font-size: 12px;
+}
+.ruler-flag:hover { background: #34181C; }
+.ruler-flag:active { transform: scale(0.99); }
+
+/* ===== Panels ===== */
+
+.panel { display: none; }
+.panel.is-active {
+    display: block;
+    animation: panel-in 0.22s ease-out;
+}
+@keyframes panel-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Directional entry (steer 9f2c1d74): a panel reached by rail/bottom-nav
+   click or a touch swipe slides in from the side it came from — forward
+   from the left in RTL, backward from the right. Runs instead of panel-in
+   while one of these classes is on the active panel. steer b7e2d94a:
+   distance/timing matched to the View Transitions page turn so the DOM
+   fallback and the VT path feel identical. */
+.panel.enter-fwd { animation: enter-fwd 0.38s var(--ease-out); }
+.panel.enter-bwd { animation: enter-bwd 0.38s var(--ease-out); }
+@keyframes enter-fwd {
+    from { opacity: 0; transform: translateX(calc(var(--vt-slide, 48px) * -1)); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes enter-bwd {
+    from { opacity: 0; transform: translateX(var(--vt-slide, 48px)); }
+    to { opacity: 1; transform: none; }
+}
+/* Two-layer page turn (steer b7e2d94a, the no-VT fallback): the leaving
+   panel is pinned out of flow by js/app.js (position:absolute at its
+   in-flow box, .stage is position:relative) and departs on top of the
+   arriving one — every browser shows the full turn, not just VT ones. */
+.panel.turn-out-fwd { animation: turn-out-fwd 0.3s cubic-bezier(0.4, 0, 1, 1) both; }
+.panel.turn-out-bwd { animation: turn-out-bwd 0.3s cubic-bezier(0.4, 0, 1, 1) both; }
+@keyframes turn-out-fwd {
+    to { opacity: 0; transform: translateX(var(--vt-slide, 48px)); }
+}
+@keyframes turn-out-bwd {
+    to { opacity: 0; transform: translateX(calc(var(--vt-slide, 48px) * -1)); }
+}
+
+.panel h2 {
+    font-family: var(--f-disp); font-weight: 700; font-size: 22px;
+    color: var(--paper);
+    margin: 28px 0 12px;
+}
+.panel h2:first-child { margin-top: 18px; }
+.panel h3 {
+    font-family: var(--f-disp); font-weight: 700; font-size: 17px;
+    color: var(--paper);
+    margin: 24px 0 10px;
+}
+.panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+    margin: 18px 0 14px;
+}
+.panel-head h2 { margin: 0; }
+
+/* ===== Today: class list ===== */
+
+/* Four cells per row — number / subject / teacher / time. The state column
+   (تمت/الآن/التالية/قادمة) and its amber cues were removed (live a7068299);
+   the weekly grid's "الآن" cell is the only amber cell left. */
+.classlist { margin-bottom: 6px; }
+.crow {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1.1fr) minmax(0, 0.9fr) auto;
+    gap: 4px 14px;
+    align-items: baseline;
+    padding: 11px 4px;
+}
+.crow + .crow { border-top: 1px solid var(--hair-soft); }
+.c-no {
+    font-family: var(--f-disp); font-weight: 700; font-size: 15px;
+    color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.c-subject { font-weight: 700; color: var(--paper); font-size: 15px; }
+.c-teacher { color: var(--muted); font-size: 13px; }
+.c-time {
+    color: var(--muted); font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== Today: exam line ===== */
+
+.examline {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    border: 1px solid var(--hair);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+}
+.examline-text { color: var(--paper-dim); font-size: 15px; }
+.linkbtn {
+    margin-inline-start: auto;
+    background: none; border: none; cursor: pointer;
+    color: var(--amber); font-family: var(--f-ui); font-size: 13px; font-weight: 700;
+    text-decoration: underline; text-underline-offset: 4px;
+}
+.linkbtn:hover { text-decoration-thickness: 2px; }
+
+/* ===== Notes (notifications) ===== */
+
+.note {
+    border: 1px solid var(--hair);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+}
+.note + .note { margin-top: 10px; }
+.note.is-pinned { background: var(--ink-2); }
+.note-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.note-head .ic { color: var(--muted); width: 17px; height: 17px; }
+.note-title { font-family: var(--f-disp); font-weight: 700; font-size: 16px; }
+.note-meta {
+    font-size: 12px; color: var(--muted);
+    margin-top: 5px;
+    font-variant-numeric: tabular-nums;
+}
+.note-body {
+    margin: 9px 0 0;
+    color: var(--paper-dim);
+    font-size: 14px; line-height: 1.8;
+    max-width: 68ch;
+}
+
+/* ===== Chips & dots ===== */
+
+.chip {
+    display: inline-flex; align-items: center;
+    background: var(--ink-2);
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    padding: 3px 11px;
+    font-size: 12px; font-weight: 700; font-style: normal;
+    color: var(--paper-dim);
+}
+.chip-sm { font-size: 11px; padding: 2px 9px; }
+.chip-red { background: var(--red); border-color: var(--red); color: var(--paper); }
+.chip-green { background: var(--green-dot); border-color: var(--green-dot); color: var(--ink); }
+.chip-muted { color: var(--muted); }
+.total-chip {
+    display: inline-flex; align-items: center;
+    background: var(--ink-2); border: 1px solid var(--hair);
+    border-radius: 999px; padding: 2px 10px;
+    font-size: 12px; font-weight: 400; color: var(--muted);
+    margin-inline-start: 8px; vertical-align: middle;
+}
+.dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    margin-inline-end: 7px; vertical-align: 1px;
+}
+.dot-red { background: var(--red); }
+.dot-muted { background: var(--faint); }
+
+/* ===== Buttons ===== */
+
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 9px 16px;
+    border-radius: var(--r-sm);
+    font-family: var(--f-ui); font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease-out, border-color 0.15s ease-out, transform 0.1s var(--ease-out);
+}
+.btn .ic { width: 17px; height: 17px; }
+.btn-primary { background: var(--amber); border: 1px solid var(--amber); color: var(--ink); }
+.btn-primary:hover { background: #FFC95E; border-color: #FFC95E; }
+.btn-ghost { background: transparent; border: 1px solid var(--hair); color: var(--paper); }
+.btn-ghost:hover { background: var(--ink-3); }
+.btn:disabled, .btn[disabled] {
+    background: var(--ink-3); border-color: var(--hair-soft);
+    color: var(--faint); cursor: not-allowed;
+}
+
+/* ===== Schedule: subtabs + tables ===== */
+
+.subtabs { display: flex; gap: 4px; margin: 18px 0 0; }
+.subtab {
+    padding: 8px 15px;
+    background: transparent;
+    border: 1px solid var(--hair-soft);
+    border-radius: var(--r-sm);
+    color: var(--muted);
+    font-family: var(--f-ui); font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease-out, color 0.15s ease-out;
+}
+.subtab:hover { background: var(--ink-2); color: var(--paper-dim); }
+.subtab.is-active { background: var(--ink-3); border-color: var(--hair); color: var(--paper); }
+.subview { display: none; }
+.subview.is-active { display: block; animation: panel-in 0.22s ease-out; }
+/* Directional subview entry (steer 9f2c1d74): the exams view slides in from
+   the side it came from — forward (weekly → exams) from the left in RTL. */
+.subview.sub-fwd { animation: sub-fwd-in 0.22s var(--ease-out); }
+.subview.sub-bwd { animation: sub-bwd-in 0.22s var(--ease-out); }
+@keyframes sub-fwd-in { from { opacity: 0; transform: translateX(-16px); } }
+@keyframes sub-bwd-in { from { opacity: 0; transform: translateX(16px); } }
+
+.gridtable-wrap { overflow-x: auto; }
+.gridtable, .examtable {
+    width: 100%;
+    border-collapse: separate; border-spacing: 0;
+}
+.gridtable { min-width: 640px; }
+.gridtable th, .gridtable td {
+    padding: 9px 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--hair-soft);
+    font-weight: 400;
+}
+.gridtable thead th {
+    color: var(--muted); font-size: 13px;
+    border-bottom: 1px solid var(--hair);
+    padding: 10px;
+}
+.gridtable td strong { display: block; font-size: 14px; color: var(--paper); }
+.gridtable td small { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.col-period { text-align: right; white-space: nowrap; }
+.col-period span {
+    font-family: var(--f-disp); font-weight: 700; font-size: 14px;
+    color: var(--paper-dim); font-variant-numeric: tabular-nums;
+}
+.col-period small {
+    display: block; font-size: 11px; color: var(--faint);
+    margin-top: 1px; font-variant-numeric: tabular-nums;
+}
+.gridtable .is-today { background: var(--amber-tint); }
+.gridtable thead th.is-today {
+    color: var(--amber); font-weight: 700;
+    background: var(--amber-tint);
+}
+/* One-shot "ink in" sweep (steer 9f2c1d74): on the first display of the
+   weekly view the amber today column is inked in place. The is-sweep class
+   is set by js/app.js and removed on animationend. */
+.gridtable.is-sweep .is-today {
+    animation: ink-in 0.6s var(--ease-out) 0.12s both;
+}
+@keyframes ink-in { from { background-color: transparent; } }
+
+.exam-summary { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+.examtable { min-width: 300px; }
+.examtable th, .examtable td {
+    text-align: right;
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--hair-soft);
+    font-size: 14px;
+}
+.examtable thead th { color: var(--muted); font-size: 13px; border-bottom: 1px solid var(--hair); }
+.examtable td { color: var(--paper-dim); }
+.examtable tr.is-upcoming td { background: var(--red-tint); }
+/* One-shot "red ink" sweep (steer 9f2c1d74): on the first display of the
+   exams view the upcoming exam row flashes strong red ink, then settles
+   into the red tint. */
+.examtable.is-sweep tr.is-upcoming td {
+    animation: red-ink 0.5s var(--ease-out) 0.15s both;
+}
+@keyframes red-ink { from { background-color: rgba(194, 48, 48, 0.5); } }
+.examtable td:first-child { font-weight: 700; color: var(--paper); }
+
+/* ===== Absence ===== */
+
+.statline {
+    display: flex; flex-wrap: wrap; gap: 8px 28px;
+    margin: 0 0 6px;
+}
+.statline > div { display: flex; flex-direction: column; gap: 4px; min-width: 90px; }
+.statline dt { font-size: 12px; color: var(--muted); }
+.statline dd {
+    margin: 0;
+    font-family: var(--f-disp); font-weight: 700; font-size: 20px;
+    color: var(--paper);
+    display: flex; align-items: center;
+    font-variant-numeric: tabular-nums;
+}
+.dayblock {
+    border: 1px solid var(--hair);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+    margin-top: 12px;
+}
+.dayblock + .dayblock { margin-top: 14px; }
+.dayblock-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.dayblock-date { font-size: 15px; color: var(--muted); }
+.dayblock-date strong { font-family: var(--f-disp); color: var(--paper); font-size: 16px; margin-inline-end: 6px; }
+.periodlist { display: grid; }
+.prow {
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr) auto auto 52px;
+    gap: 4px 14px; align-items: center;
+    padding: 9px 4px;
+    font-size: 13px; color: var(--muted);
+}
+.prow + .prow { border-top: 1px solid var(--hair-soft); }
+.p-subject { font-weight: 700; color: var(--paper); }
+.p-time { font-variant-numeric: tabular-nums; }
+.p-state { color: var(--red-text); font-weight: 700; font-size: 12px; text-align: center; }
+
+/* ===== Grades empty state ===== */
+
+.empty {
+    text-align: center;
+    padding: 56px 16px;
+    border: 1px dashed var(--hair);
+    border-radius: var(--r-md);
+    margin-top: 12px;
+}
+.empty .ic-lg { width: 42px; height: 42px; color: var(--faint); opacity: 0.6; }
+.empty p { margin: 14px 0 0; color: var(--paper); font-weight: 700; font-size: 16px; }
+.empty-sub { font-size: 13px; font-weight: 400; color: var(--muted); margin-top: 5px; }
+
+/* ===== Chat ===== */
+
+/* Modern chat (live 1ae2e14e, variant "quiet" accepted at spacious /
+   bubble width 82%): borderless frame, soft uniform bubbles, and a
+   capsule composer with circular attach/send buttons (icon-only send). */
+.chat { overflow: hidden; }
+.chat-messages {
+    max-height: 340px;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 16px;
+}
+.chat-day {
+    align-self: center;
+    background: var(--ink-2);
+    border: 1px solid var(--hair-soft);
+    border-radius: 999px;
+    font-size: 11px; color: var(--muted);
+    padding: 3px 12px;
+    font-variant-numeric: tabular-nums;
+}
+.msg {
+    max-width: 82%;
+    background: var(--ink-2);
+    border-radius: 12px;
+    padding: 9px 13px;
+    font-size: 14px; line-height: 1.7;
+}
+.msg p { margin: 0; color: var(--paper-dim); overflow-wrap: anywhere; }
+.msg .msg-meta {
+    display: block; margin-top: 5px;
+    font-size: 10px; color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.85;
+}
+.msg.mine {
+    align-self: flex-end;
+    background: var(--ink-3);
+    border-radius: 12px;
+}
+.msg.mine p { color: var(--paper); }
+.msg-img {
+    display: block;
+    max-width: 180px;
+    border-radius: 10px;
+    cursor: zoom-in;
+    margin-bottom: 7px;
+}
+.msg-img:hover { opacity: 0.85; }
+/* Capsule composer: one pill holds the input, attach, and send. */
+.chat-compose {
+    display: flex; gap: 8px; align-items: center;
+    margin: 0 12px 12px;
+    border: 1px solid var(--hair-soft);
+    background: var(--ink-2);
+    border-radius: 999px;
+    padding: 4px 6px;
+}
+.chat-compose textarea {
+    flex: 1 1 160px;
+    min-height: 34px;
+    background: none;
+    border: none;
+    color: var(--paper);
+    font-family: var(--f-ui); font-size: 14px;
+    padding: 7px 6px;
+    resize: none;
+}
+.chat-compose textarea::placeholder { color: var(--faint); }
+.chat-compose textarea:disabled { opacity: 0.55; }
+.chat-tools { display: flex; gap: 5px; }
+.chat-attach {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ink-3);
+    border: none;
+    color: var(--paper-dim);
+    cursor: not-allowed;
+}
+.chat-attach .ic { width: 17px; height: 17px; }
+.chat-send {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ink-3);
+    border: 1px solid var(--hair-soft);
+    color: var(--faint);
+    cursor: not-allowed;
+}
+.chat-send .ic { width: 18px; height: 18px; }
+.chat-note {
+    margin: 0;
+    padding: 10px 14px;
+    border-top: 1px solid var(--hair-soft);
+    background: var(--ink);
+    font-size: 12px;
+    color: var(--faint);
+}
+
+/* ===== Settings ===== */
+
+.setting {
+    border: 1px solid var(--hair);
+    border-radius: var(--r-md);
+    padding: 16px;
+}
+.setting + .setting { margin-top: 12px; }
+.setting-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap;
+}
+.setting-head strong { font-size: 15px; }
+.setting-text {
+    margin: 8px 0 14px;
+    font-size: 13px; color: var(--muted); line-height: 1.7;
+}
+.setting .btn { margin-inline-start: 0; }
+
+.info-list { margin: 0; }
+.info-list > div {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px;
+    padding: 11px 4px;
+}
+.info-list > div + div { border-top: 1px solid var(--hair-soft); }
+.info-list dt { color: var(--muted); font-size: 13px; }
+.info-list dd { margin: 0; font-weight: 700; font-size: 15px; }
+
+/* ===== Bottom nav (mobile) ===== */
+
+.bottomnav { display: none; }
+
+/* ===== Toasts ===== */
+
+.toasts {
+    position: fixed;
+    inset-inline-end: 16px; bottom: 24px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 100;
+    max-width: min(340px, calc(100vw - 32px));
+}
+.toast {
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--ink-3);
+    border: 1px solid var(--hair);
+    border-radius: var(--r-md);
+    padding: 12px 14px;
+    font-size: 13px; color: var(--paper-dim);
+    box-shadow: 0 8px 24px rgba(4, 8, 14, 0.45);
+    animation: toast-in 0.2s ease-out;
+}
+/* Countdown line (steer 9f2c1d74): a 2px amber hairline consumes over the
+   toast's 5s life — the "now" reading of the amber rule. Grows along the
+   RTL reading direction (right → left). */
+.toast-progress {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    animation: toast-run 5s linear forwards;
+}
+@keyframes toast-run { to { transform: scaleX(1); } }
+.toast p { margin: 0; flex: 1; }
+.toast-x {
+    background: none; border: none; cursor: pointer;
+    color: var(--faint); padding: 4px;
+    display: grid; place-items: center;
+}
+.toast-x .ic { width: 15px; height: 15px; }
+.toast-x:hover { color: var(--paper); }
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* ===== Lightbox ===== */
+
+.lightbox {
+    position: fixed; inset: 0;
+    background: rgba(4, 8, 14, 0.92);
+    display: grid; place-items: center;
+    padding: 24px;
+    z-index: 90;
+}
+.lightbox[hidden] { display: none; }
+/* Lightbox entry (steer 9f2c1d74): the scrim fades while the image
+   scale-ins from 0.94 — a bounded focus move. Exit stays a plain cut
+   (exit faster than entry). */
+.lightbox:not([hidden]) { animation: lb-scrim 0.18s ease-out; }
+.lightbox:not([hidden]) #lightbox-img { animation: lb-in 0.24s var(--ease-out); }
+@keyframes lb-scrim { from { opacity: 0; } }
+@keyframes lb-in { from { opacity: 0; transform: scale(0.94); } }
+.lightbox img {
+    max-width: 92%; max-height: 82vh;
+    border-radius: var(--r-md);
+    background: var(--paper);
+}
+.lightbox-close {
+    position: absolute;
+    top: 18px; inset-inline-end: 18px;
+    width: 44px; height: 44px;
+    display: grid; place-items: center;
+    background: var(--ink-2);
+    border: 1px solid var(--hair);
+    border-radius: 50%;
+    color: var(--paper);
+    cursor: pointer;
+}
+.lightbox-close:hover { background: var(--ink-3); }
+.lightbox-close .ic { width: 22px; height: 22px; }
+
+/* ===== Responsive ===== */
+
+@media (max-width: 1023px) {
+    :root { --vt-slide: 32px; }
+    .shell { grid-template-columns: 1fr; }
+    /* The base shell pins the stage to grid column 2 (the rail's column is
+       1). With a single-column template that placement would fall into an
+       implicit auto track, so the stage shrinks to its max-content and
+       dead ground opens on the start side from 768 up. Pin it to column 1. */
+    .stage { grid-column: 1; }
+    .rail { display: none; }
+    .stage { padding: 16px 16px 110px; --vt-slide: 32px; }
+    .date-num { font-size: 62px; }
+    .dayhead { margin-bottom: 12px; }
+
+    .bottomnav {
+        display: flex;
+        position: fixed;
+        inset-inline: 0; bottom: 0;
+        z-index: 60;
+        background: var(--ink);
+        border-top: 1px solid var(--hair);
+        /* Side safe insets are physical: a landscape phone's notch sits on
+           the notch side of the bar regardless of RTL direction. */
+        padding: 6px max(6px, env(safe-area-inset-left, 0px))
+                calc(6px + env(safe-area-inset-bottom, 0px))
+                max(6px, env(safe-area-inset-right, 0px));
+    }
+    .bn-item {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+        display: grid; justify-items: center; gap: 3px;
+        background: none; border: none; cursor: pointer;
+        padding: 7px 2px;
+        border-radius: var(--r-sm);
+        color: var(--muted);
+        font-family: var(--f-ui); font-size: 11px; font-weight: 700;
+        transition: color 0.15s ease-out, transform 0.1s var(--ease-out);
+    }
+    .bn-item span {
+        max-width: 100%;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .bn-item .ic { width: 20px; height: 20px; }
+    .bn-item.is-active { color: var(--paper); }
+    .bn-item.is-active .ic { color: var(--amber); }
+    .bn-item:active { transform: scale(0.96); }
+    /* Sliding active indicator: a 2px amber line under the icon (steer
+       9f2c1d74) — the now-state carries its own mark. */
+    .bn-item::after {
+        content: "";
+        position: absolute;
+        top: 28px;
+        left: 50%;
+        width: 18px; height: 2px;
+        border-radius: 1px;
+        background: var(--amber);
+        transform: translateX(-50%) scaleX(0);
+        opacity: 0;
+        transition: transform 0.25s var(--ease-out), opacity 0.2s ease-out;
+    }
+    .bn-item.is-active::after { transform: translateX(-50%) scaleX(1); opacity: 1; }
+    .bn-item .count {
+        position: absolute;
+        top: 0; inset-inline-end: 22%;
+        min-width: 16px; height: 16px; padding: 0 4px;
+        display: grid; place-items: center;
+        background: var(--red); color: var(--paper);
+        border-radius: 999px;
+        font-size: 10px; font-style: normal; line-height: 1;
+    }
+    .toasts { bottom: 84px; }
+}
+
+@media (max-width: 559px) {
+    /* Exam flag: one line smaller on compact screens. */
+    .ruler-flag { font-size: 12px; padding: 8px 12px; }
+
+    /* Class rows: two compact rows instead of four narrow columns. */
+    .crow {
+        grid-template-columns: 24px minmax(0, 1fr) auto;
+        gap: 2px 10px;
+        padding: 10px 4px;
+    }
+    .c-no { grid-column: 1; grid-row: 1; }
+    .c-subject { grid-column: 2; grid-row: 1; }
+    .c-time { grid-column: 3; grid-row: 1; }
+    .c-teacher { grid-column: 2; grid-row: 2; font-size: 11px; }
+
+    .prow { grid-template-columns: 60px minmax(0, 1fr) auto; }
+    .p-teacher { display: none; }
+    .topbar-user span:first-child { display: none; }
+}
+
+/* ===== Tablet portrait 768–1023 (adapt, one-thumb context) =====
+   The band stops inheriting the phone layout wholesale: the seven-item
+   bar would stretch the full width of a 10-inch screen, unreachable at
+   the corners from a thumb held at the bottom. The bar keeps its
+   full-width shelf (background + top hair), but the items cluster in
+   the thumb-reachable middle with grown targets; the day number steps
+   up from phone scale. */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .date-num { font-size: 72px; }
+    .dayhead { margin-bottom: 16px; }
+
+    .bottomnav {
+        justify-content: center;
+        padding: 8px max(24px, env(safe-area-inset-left, 0px))
+                calc(8px + env(safe-area-inset-bottom, 0px))
+                max(24px, env(safe-area-inset-right, 0px));
+    }
+    .bn-item {
+        flex: 0 0 auto;
+        min-width: 84px;
+        padding: 8px 4px;
+        font-size: 12px;
+    }
+    .bn-item .ic { width: 22px; height: 22px; }
+    .bn-item::after { top: 34px; width: 20px; }
+    .toasts { bottom: 96px; }
+}
+
+/* ===== Phone landscape (adapt: short viewport) =====
+   In 844×390 / 820×374 the stacked day head (62px numeral + weekday
+   beneath + flag) would spend half the viewport before any content.
+   The head folds into one line — numeral beside weekday — and the
+   verticals tighten so the class list reaches the first viewport.
+   Runs after the tablet band, so a landscape phone in the 768–1023
+   width range reads the landscape head, not the tablet's 72px one. */
+@media (orientation: landscape) and (max-height: 480px) {
+    .stage { padding: 12px 24px 72px; }
+    .dayhead { margin-bottom: 8px; }
+    .dayhead-date { flex-direction: row; align-items: baseline; gap: 10px; }
+    .date-num { font-size: 44px; }
+    .date-meta { font-size: 14px; }
+    .ruler-flag { margin: 0 0 10px; }
+    .panel h2 { margin: 16px 0 10px; }
+    .panel h2:first-child { margin-top: 4px; }
+    .panel-head { margin: 8px 0 12px; }
+    .toasts { bottom: 72px; }
+}
+
+/* ===== Wide desktop ≥1440 (adapt) =====
+   At 1440–1920+ the 960px content cluster, start-anchored beside the
+   rail, leaves a dead ground on the far side. The cluster (day head,
+   exam flag, panels) centers itself in the stage — the "unprinted
+   margin" becomes symmetric — and at 1700+ the cap widens to 1120 so
+   the extra ground is not wasted. */
+@media (min-width: 1440px) {
+    .stage { padding: 24px 40px 48px; }
+    .dayhead, .ruler-flag, .panel { margin-inline: auto; }
+}
+@media (min-width: 1700px) {
+    .dayhead, .ruler-flag, .panel { max-width: 1120px; }
+}
+
+/* ===== Motion: boot · cascade · view transitions · feedback =====
+   steer 9f2c1d74 (motion-signature): the "ساعة الدرس" motion language.
+   One authored open sequence, directional continuity between views,
+   list cascades, sliding active indicators, and bounded one-shot sweeps.
+   steer b7e2d94a (page-turn): panel switches become crafted
+   directional page turns. Transform/opacity only — no perpetual
+   motion, no filters. */
+
+/* View Transitions: the stage region is the only named element, so a
+   panel switch composites two snapshots of it while the top bar, rail,
+   and bottom nav persist. The default is a plain crossfade; when
+   js/app.js pins data-vt-dir on <html> the turn becomes directional —
+   the old page departs toward the side it left from while the new page
+   arrives from the opposite side (RTL forward = the new page comes
+   from the left). The slide distance is device-tuned: 48px on the
+   wide stage, 32px on phones. */
+.stage { view-transition-name: stage; --vt-slide: 48px; }
+::view-transition-old(stage) { animation: vt-x-old 0.22s ease-out; }
+::view-transition-new(stage) { animation: vt-x-new 0.3s var(--ease-out); }
+@keyframes vt-x-old { from { opacity: 1; } to { opacity: 0; } }
+@keyframes vt-x-new { from { opacity: 0; } to { opacity: 1; } }
+
+html[data-vt-dir="fwd"]::view-transition-old(stage) { animation: vt-out-fwd 0.3s cubic-bezier(0.4, 0, 1, 1); }
+html[data-vt-dir="fwd"]::view-transition-new(stage) { animation: vt-in-fwd 0.38s var(--ease-out); }
+html[data-vt-dir="bwd"]::view-transition-old(stage) { animation: vt-out-bwd 0.3s cubic-bezier(0.4, 0, 1, 1); }
+html[data-vt-dir="bwd"]::view-transition-new(stage) { animation: vt-in-bwd 0.38s var(--ease-out); }
+@keyframes vt-out-fwd {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(var(--vt-slide)); }
+}
+@keyframes vt-in-fwd {
+    from { opacity: 0; transform: translateX(calc(var(--vt-slide) * -1)); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes vt-out-bwd {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(calc(var(--vt-slide) * -1)); }
+}
+@keyframes vt-in-bwd {
+    from { opacity: 0; transform: translateX(var(--vt-slide)); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* One-shot open sequence — "the lesson clock strikes": the top bar
+   settles, the day number lands with a confident deceleration, the
+   weekday rises, the exam flag unfurls from its pole (RTL start edge,
+   clip-path), and the bottom nav slides up on phones. Gated on the
+   data-boot attribute set by js/app.js; without JS the page is static. */
+html[data-boot] .topbar { animation: boot-top 0.3s var(--ease-out) both; }
+html[data-boot] .rail { animation: boot-fade 0.4s var(--ease-out) 0.15s both; }
+html[data-boot] .date-num { animation: boot-num 0.55s var(--ease-out) 0.1s both; }
+html[data-boot] .date-meta { animation: boot-rise 0.45s var(--ease-out) 0.3s both; }
+html[data-boot] .ruler-flag { animation: boot-flag 0.45s var(--ease-out) 0.45s both; }
+html[data-boot] .bottomnav { animation: boot-nav 0.35s var(--ease-out) 0.1s both; }
+@keyframes boot-top { from { opacity: 0; transform: translateY(-10px); } }
+@keyframes boot-fade { from { opacity: 0; } }
+@keyframes boot-num { from { opacity: 0; transform: translateY(14px) scale(1.04); } }
+@keyframes boot-rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes boot-flag { from { clip-path: inset(0 0 0 100%); } }
+@keyframes boot-nav { from { transform: translateY(100%); } }
+
+/* List cascade: lists enter as lists when a panel or subview is shown.
+   js/app.js sets --i per sibling (capped at 12) and --stag-base on the
+   panel; table rows take the opacity-only variant. */
+.stag {
+    animation: row-in 0.28s var(--ease-out) both;
+    animation-delay: calc(var(--stag-base, 40ms) + var(--i, 0) * var(--stag-step, 24ms));
+}
+tr.stag { animation-name: tr-in; }
+@keyframes row-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes tr-in { from { opacity: 0; } }
+
+/* Press feedback */
+.btn:active:not(:disabled) { transform: scale(0.97); }
+
+/* ===== Motion safety =====
+   Reduced motion: no spatial movement — every transform/clip-path move,
+   the view turns, and the two-layer slide come off. State changes stay
+   legible as gentle opacity fades (and the colour-only sweeps), so the
+   page is never dead. steer b7e2d94a. */
+@keyframes reduce-fade { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .panel.is-active, .panel.enter-fwd, .panel.enter-bwd,
+    .panel.turn-out-fwd, .panel.turn-out-bwd,
+    .subview.is-active, .subview.sub-fwd, .subview.sub-bwd,
+    .stag, tr.stag,
+    html[data-boot] .topbar, html[data-boot] .rail,
+    html[data-boot] .date-num, html[data-boot] .date-meta,
+    html[data-boot] .ruler-flag, html[data-boot] .bottomnav,
+    .toast,
+    .lightbox:not([hidden]), .lightbox:not([hidden]) #lightbox-img,
+    ::view-transition-old(stage), ::view-transition-new(stage) {
+        animation: reduce-fade 0.2s ease !important;
+    }
+    .toast-progress { animation: none !important; }
+    .rail-item, .rail-item::before, .bn-item, .bn-item::after,
+    .btn, .subtab, .skip-link, .ruler-flag, .topbar-logout, .msg-img {
+        transition: none !important;
+    }
+    .btn:active, .rail-item:active, .bn-item:active, .ruler-flag:active {
+        transform: none !important;
+    }
+}

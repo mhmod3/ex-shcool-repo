@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "world": "period-clock",
+  "tokens": {
+    "color": {
+      "--ink": "#0D1420",
+      "--ink-2": "#121E30",
+      "--ink-3": "#1A2941",
+      "--hair": "#24344E",
+      "--hair-soft": "#1B2A40",
+      "--paper": "#E8EDF4",
+      "--paper-dim": "#C3CCDA",
+      "--muted": "#8A94A6",
+      "--faint": "#7C8798",
+      "--amber": "#F5B83D",
+      "--amber-tint": "rgba(245, 184, 61, 0.12)",
+      "--red": "#C23030",
+      "--red-tint": "#2A1316",
+      "--red-text": "#E8988E",
+      "--green": "#4CC48F",
+      "--green-dot": "#2E9E6B",
+      "--green-tint": "#12291F"
+    },
+    "type": {
+      "display": {
+        "family": "'Cairo', 'Almarai', sans-serif",
+        "weights": [700, 900],
+        "roles": ["display numerals", "heads"],
+        "numerals": "84px / 0.95 / -0.02em, tabular-nums (62px at <=1023px)"
+      },
+      "ui": {
+        "family": "'Almarai', sans-serif",
+        "weights": [400, 700],
+        "roles": ["body", "labels", "controls"],
+        "body": "15px / 1.6"
+      },
+      "load": "Google Fonts CDN (Almarai:wght@400;700 + Cairo:wght@700;900, display=swap, preconnect) — project convention",
+      "tabularNums": "all numerals (dates, times, period numbers, counts, scores, badges) set font-variant-numeric: tabular-nums; LTR time ranges isolated with dir=ltr"
+    },
+    "spacing": {
+      "base": "4px",
+      "--sp-1": "4px",
+      "--sp-2": "8px",
+      "--sp-3": "12px",
+      "--sp-4": "16px",
+      "--sp-5": "20px",
+      "--sp-6": "28px",
+      "--sp-7": "40px"
+    },
+    "radius": {
+      "--r-sm": "6px",
+      "--r-md": "10px",
+      "pill": "999px",
+      "circle": "50%"
+    },
+    "motion": {
+      "ruler-pulse": "segpulse 3s ease-in-out infinite; opacity 1 -> 0.82 -> 1 on the now segment; the only perpetual motion",
+      "panel-transition": "panel-in 0.22s ease-out (opacity 0 + translateY(6px) -> settle) on panel/subview activation",
+      "micro": "0.15s ease-out hover/fill transitions; skip-link 0.15s; toast-in 0.2s ease-out, 0.2s opacity dismiss",
+      "reducedMotion": "prefers-reduced-motion: reduce -> animation/transition none !important on all elements"
+    }
+  },
+  "stateVocabulary": {
+    "amber": "now/live",
+    "red": "exam/absence attention",
+    "green": "completion/presence"
+  },
+  "provenance": {
+    "rasters": [
+      "images/logo.png — incumbent brand asset from the original application snapshot (fixture chat image); pre-existing, unmodified in this run",
+      "images/icon-32.png — incumbent favicon/PWA brand asset from the original application snapshot; pre-existing, unmodified in this run",
+      "images/icon-192.png — incumbent PWA/apple-touch brand asset from the original application snapshot; pre-existing, unmodified in this run",
+      "No rasters were generated in this run"
+    ]
+  }
+}
