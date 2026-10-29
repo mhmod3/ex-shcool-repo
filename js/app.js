@@ -80,6 +80,172 @@
         }, { once: true });
     }
 
+    /* ---------- Date-aware views: one load-time pass against the real clock ----------
+       The weekly grid is the single source of truth for the day's
+       lessons, the exam table for exam dates. This pass reads both and
+       aligns every date-bound view: the day head (number + weekday),
+       the amber today column, the today class list, exam row states
+       (past / next), the summary chips, the exam line, and the
+       attention flag — with relative labels (اليوم / غدًا / بعد غد /
+       بعد N أيام) instead of fixture copy. Dated records (absence log,
+       chat days, pinned note) stay history; only day-relative claims
+       are re-derived. Runs once at load, before the boot sequence and
+       deep-link handling. */
+
+    var pad2 = function (n) { return (n < 10 ? "0" : "") + n; };
+    var AR_DAYS = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
+    function relLabel(diff) {
+        if (diff === 0) return "اليوم";
+        if (diff === 1) return "غدًا";
+        if (diff === 2) return "بعد غد";
+        if (diff < 7) return "بعد " + diff + " أيام";
+        return null; // beyond a week: the date speaks for itself
+    }
+
+    function alignToToday() {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var day = now.getDay(); // 0 = الأحد … 6 = السبت; the grid carries 0..4
+        var grid = $(".gridtable");
+
+        /* The big date + weekday */
+        var num = $(".dayhead .date-num");
+        var meta = $(".dayhead .date-meta");
+        if (num) num.textContent = today.getDate() + "/" + pad2(today.getMonth() + 1);
+        if (meta) meta.textContent = AR_DAYS[day];
+
+        /* Amber today column (also the first-display sweep target) */
+        if (grid) {
+            $$(".is-today", grid).forEach(function (el) { el.classList.remove("is-today"); });
+            if (day <= 4) {
+                var head = $("thead th:nth-child(" + (day + 2) + ")", grid);
+                if (head) head.classList.add("is-today");
+                $$("tbody tr", grid).forEach(function (tr) {
+                    if (tr.cells[day + 1]) tr.cells[day + 1].classList.add("is-today");
+                });
+            }
+        }
+
+        /* Today's class list, rebuilt from the grid's today column */
+        var list = $(".classlist");
+        if (list && grid) {
+            var html = "";
+            if (day <= 4) {
+                var no = 0;
+                $$("tbody tr", grid).forEach(function (tr) {
+                    var td = tr.cells[day + 1];
+                    if (!td) return;
+                    var s = td.querySelector("strong");
+                    if (!s) return;
+                    no += 1;
+                    var t = td.querySelector("small");
+                    var time = tr.cells[0] ? tr.cells[0].querySelector("small") : null;
+                    html += '<div class="crow"><span class="c-no">' + no + "</span>" +
+                        '<span class="c-subject">' + s.textContent + "</span>" +
+                        '<span class="c-teacher">' + (t ? t.textContent : "") + "</span>" +
+                        '<span class="c-time" dir="ltr">' + (time ? time.textContent : "") + "</span></div>";
+                });
+            }
+            list.innerHTML = html !== ""
+                ? html
+                : '<div class="empty"><p>لا دروس اليوم</p><p class="empty-sub">لا دروس يوم ' + AR_DAYS[day] + " في الجدول الأسبوعي.</p></div>";
+        }
+
+        /* Exam rows: past attenuated, the next upcoming red-tinted */
+        function examDate(cell) {
+            var host = cell.querySelector("span[dir=ltr]") || cell;
+            var m = host.textContent.trim().match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            if (!m) return null;
+            return new Date(+m[3], +m[2] - 1, +m[1]);
+        }
+        var exams = $$(".examtable tbody tr").map(function (tr) {
+            var date = examDate(tr.cells[1]);
+            if (!date) return null;
+            return { tr: tr, date: date, diff: Math.round((date - today) / 86400000) };
+        }).filter(Boolean);
+        exams.sort(function (a, b) { return a.date - b.date; });
+        var next = null;
+        exams.forEach(function (e) { if (!next && e.diff >= 0) next = e; });
+
+        exams.forEach(function (e) {
+            var cell = e.tr.cells[2];
+            var chip = cell.querySelector(".chip");
+            if (!chip) {
+                chip = document.createElement("span");
+                chip.className = "chip";
+                cell.appendChild(chip);
+            }
+            if (e.diff < 0) {
+                chip.textContent = "منقضي";
+                chip.className = "chip chip-muted";
+                e.tr.classList.remove("is-upcoming");
+                e.tr.classList.add("is-past");
+            } else if (e === next) {
+                chip.textContent = relLabel(e.diff) || (e.date.getDate() + "/" + pad2(e.date.getMonth() + 1));
+                chip.className = "chip chip-red";
+                e.tr.classList.remove("is-past");
+                e.tr.classList.add("is-upcoming");
+            } else {
+                chip.textContent = "قادم";
+                chip.className = "chip";
+                e.tr.classList.remove("is-upcoming", "is-past");
+            }
+        });
+
+        /* Summary chips: subject count + the closest exam */
+        var chips = $$(".exam-summary .chip");
+        if (chips[0]) chips[0].textContent = "المواد: " + exams.length;
+        if (chips[1]) {
+            if (next) {
+                var nsub = next.tr.cells[0].textContent.trim();
+                chips[1].textContent = (relLabel(next.diff) || "القادم") + ": " + nsub + " · " +
+                    next.date.getDate() + "/" + pad2(next.date.getMonth() + 1);
+                chips[1].className = "chip chip-red";
+            } else {
+                chips[1].textContent = "لا امتحانات قادمة";
+                chips[1].className = "chip chip-muted";
+            }
+        }
+
+        /* Today's attention line (the next exam, relative) */
+        var line = $(".examline");
+        if (line) {
+            var lc = line.querySelector(".chip");
+            var lt = line.querySelector(".examline-text");
+            if (next) {
+                if (lc) {
+                    lc.textContent = relLabel(next.diff) || "قادم";
+                    lc.className = "chip chip-red";
+                }
+                if (lt) lt.textContent = next.tr.cells[0].textContent.trim() + " · " +
+                    AR_DAYS[next.date.getDay()] + " " + next.date.getDate() + "/" + pad2(next.date.getMonth() + 1);
+            } else {
+                if (lc) { lc.textContent = "لا امتحانات"; lc.className = "chip chip-muted"; }
+                if (lt) lt.textContent = "لا امتحانات قادمة في هذا الجدول.";
+            }
+        }
+
+        /* Attention flag under the day head */
+        var flag = $(".ruler-flag");
+        if (flag) {
+            if (next) {
+                var fsub = next.tr.cells[0].textContent.trim();
+                var rel = relLabel(next.diff);
+                var dsl = next.date.getDate() + "/" + pad2(next.date.getMonth() + 1);
+                var ft = $(".ruler-flag-text", flag);
+                var fd = $(".ruler-flag-date", flag);
+                if (ft) ft.textContent = rel ? rel + " · امتحان " + fsub : "امتحان " + fsub + " · " + dsl;
+                if (fd) fd.textContent = dsl;
+                flag.setAttribute("aria-label", (rel ? rel + " " : "") + "امتحان " + fsub + " " + dsl);
+            } else {
+                flag.hidden = true;
+            }
+        }
+    }
+
+    alignToToday();
+
     /* ---------- Toasts ---------- */
 
     var toasts = $("#toasts");

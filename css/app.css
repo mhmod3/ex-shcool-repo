@@ -499,6 +499,9 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .examtable thead th { color: var(--muted); font-size: 13px; border-bottom: 1px solid var(--hair); }
 .examtable td { color: var(--paper-dim); }
 .examtable tr.is-upcoming td { background: var(--red-tint); }
+/* Past exam rows attenuate; the red tint stays reserved for the next
+   upcoming row (js/app.js date pass sets is-past / is-upcoming). */
+.examtable tr.is-past td { opacity: 0.55; }
 /* One-shot "red ink" sweep (steer 9f2c1d74): on the first display of the
    exams view the upcoming exam row flashes strong red ink, then settles
    into the red tint. */
