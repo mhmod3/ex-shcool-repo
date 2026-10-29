@@ -823,28 +823,32 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         transition: color 0.15s ease-out, transform 0.1s var(--ease-out);
     }
     .bn-item span {
+        position: relative;
         max-width: 100%;
+        padding-bottom: 4px;
         overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .bn-item .ic { width: 20px; height: 20px; }
     .bn-item.is-active { color: var(--paper); }
     .bn-item.is-active .ic { color: var(--amber); }
     .bn-item:active { transform: scale(0.96); }
-    /* Sliding active indicator: a 2px amber line under the icon (steer
-       9f2c1d74) — the now-state carries its own mark. */
-    .bn-item::after {
+    /* Sliding active indicator: a 2px amber line under the label word
+       (steer 9f2c1d74, re-aimed under the word in the bnlabel pass) —
+       the width follows the word: the span is content-width in the
+       centered grid, so left/right 0 on the span's ::after is the smart
+       width. Now-state carries its own mark. */
+    .bn-item span::after {
         content: "";
         position: absolute;
-        top: 28px;
-        left: 50%;
-        width: 18px; height: 2px;
+        left: 0; right: 0; bottom: 0;
+        height: 2px;
         border-radius: 1px;
         background: var(--amber);
-        transform: translateX(-50%) scaleX(0);
+        transform: scaleX(0);
         opacity: 0;
         transition: transform 0.25s var(--ease-out), opacity 0.2s ease-out;
     }
-    .bn-item.is-active::after { transform: translateX(-50%) scaleX(1); opacity: 1; }
+    .bn-item.is-active span::after { transform: scaleX(1); opacity: 1; }
     .bn-item .count {
         position: absolute;
         top: 0; inset-inline-end: 22%;
@@ -901,7 +905,6 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         font-size: 12px;
     }
     .bn-item .ic { width: 22px; height: 22px; }
-    .bn-item::after { top: 34px; width: 20px; }
     .toasts { bottom: 96px; }
 }
 
@@ -1035,7 +1038,7 @@ tr.stag { animation-name: tr-in; }
         animation: reduce-fade 0.2s ease !important;
     }
     .toast-progress { animation: none !important; }
-    .rail-item, .rail-item::before, .bn-item, .bn-item::after,
+    .rail-item, .rail-item::before, .bn-item, .bn-item span::after,
     .btn, .subtab, .skip-link, .ruler-flag, .topbar-logout, .msg-img {
         transition: none !important;
     }
