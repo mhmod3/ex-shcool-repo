@@ -302,7 +302,7 @@
 
     /* ---------- Panel activation (rail, bottom nav, flags, deep links) ---------- */
 
-    var panels = $$(".stage > .panel");
+    var panels = $$(".panel");
     var railItems = $$(".rail .rail-item");
     var bnItems = $$(".bottomnav .bn-item");
     var swipeOrder = $$(".rail .rail-item").map(function (a) { return a.getAttribute("data-goto"); });
@@ -320,47 +320,16 @@
         });
     }
 
-    /* The panel currently on screen, tracked explicitly so direction is
-       computed from the true current page even mid-turn (while the
-       leaving and arriving panels are briefly both visible). */
     var currentPanelId = "panel-today";
-    var exitingPanel = null;
     var currentVT = null;
-
-    /* The leaving page is retired by its own animationend; releaseExit
-       is the single place that retires it, and finishExit is the
-       fast-forward used when a faster switch interrupts it. */
-    function releaseExit(panel) {
-        panel.classList.remove("turn-out-fwd", "turn-out-bwd", "enter-fwd", "enter-bwd");
-        panel.classList.remove("is-active");
-        panel.hidden = true;
-        panel.style.position = "";
-        panel.style.top = "";
-        panel.style.width = "";
-        panel.style.insetInlineStart = "";
-        if (exitingPanel === panel) exitingPanel = null;
-    }
-
-    function finishExit() {
-        if (exitingPanel) releaseExit(exitingPanel);
-    }
 
     function setHash(panelId) {
         try { history.replaceState(null, "", "#" + panelId); } catch (e) { /* file:// origins */ }
     }
 
-    /* Directional panel switch (steer 9f2c1d74): forward (in reading
-       order) enters from the left, backward from the right — the RTL
-       forward-left convention shared with the touch swipe. steer
-       b7e2d94a (page-turn): with the View Transitions API the whole
-       stage turns directionally — the old page departs toward the side
-       it left from while the new page arrives from the opposite side —
-       so the panel-level slide is skipped (it would double the motion)
-       and only the list cascade runs inside the arriving page.
-       data-vt-dir is pinned on <html> for the transition's duration.
-       Without the API the two-layer DOM turn runs instead: the leaving
-       panel is pinned out of flow and departs on top of the arriving
-       one, so every browser shows the same turn. */
+    /* Clean unified panel switch: the arriving page enters as a single complete block
+       (no phased cascade, no empty frame delay). Directional slide (RTL forward = from left)
+       or smooth cross-fade with solid background prevents any ghosting or overlap. */
     function activatePanel(panelId, sub, dirIn) {
         if (currentPanelId === panelId && !sub) {
             setHash(panelId);
@@ -370,54 +339,48 @@
             ? (swipeOrder.indexOf(panelId) > swipeOrder.indexOf(currentPanelId) ? "fwd" : "bwd")
             : null);
         var target = document.getElementById(panelId);
-        var old = document.getElementById(currentPanelId);
-        var useVT = !!dir && "startViewTransition" in document && fullMotion();
-        var twoLayer = !useVT && !!dir && fullMotion() && old && old !== target;
+        var acadHeader = $("#academic-header");
+        var isAcademic = (panelId !== "panel-chat" && panelId !== "panel-settings");
+
+        var isMobile = window.matchMedia("(max-width: 1023px)").matches;
+        // On mobile touch viewports, skip startViewTransition and animations to prevent ghosting and frame drops
+        var useVT = !isMobile && !!dir && "startViewTransition" in document && fullMotion();
+
         var apply = function () {
-            finishExit();
-            if (twoLayer) {
-                /* Capture the leaving page's in-flow box, then pin it out
-                   of flow so the arriving page flows into its place and
-                   the old page departs on top. */
-                var top = old.offsetTop;
-                var width = old.offsetWidth;
-                old.classList.remove("enter-fwd", "enter-bwd");
-                old.style.position = "absolute";
-                old.style.top = top + "px";
-                old.style.insetInlineStart = "0";
-                old.style.width = width + "px";
+            if (acadHeader) {
+                acadHeader.hidden = !isAcademic;
             }
+
             panels.forEach(function (p) {
-                if (twoLayer && p === old) return; // retired by its own animationend
                 var on = p.id === panelId;
                 p.classList.toggle("is-active", on);
-                p.classList.remove("enter-fwd", "enter-bwd");
+                p.classList.remove("enter-fwd", "enter-bwd", "panel-fade-in");
                 p.hidden = !on;
             });
-            if (twoLayer) {
-                old.classList.add(dir === "fwd" ? "turn-out-fwd" : "turn-out-bwd");
-                exitingPanel = old;
-                old.addEventListener("animationend", function handler(e) {
-                    if (e.target !== old) return; // child cascades bubble; only the panel's own turn retires it
-                    old.removeEventListener("animationend", handler);
-                    releaseExit(old);
-                });
+
+            if (target && !isMobile) {
+                void target.offsetWidth;
+                if (!useVT && dir && fullMotion()) {
+                    target.classList.add(dir === "fwd" ? "enter-fwd" : "enter-bwd");
+                } else if (!useVT) {
+                    target.classList.add("panel-fade-in");
+                }
             }
-            void target.offsetWidth;
-            if (twoLayer) target.classList.add(dir === "fwd" ? "enter-fwd" : "enter-bwd");
-            startStagger(target, 40);
+
             syncNav(panelId);
             setHash(panelId);
             currentPanelId = panelId;
+            if (isMobile) {
+                window.scrollTo(0, 0);
+            }
             if (sub) activateSub(sub);
             firstSweep(sub || "weekly");
         };
+
         if (useVT) {
             document.documentElement.setAttribute("data-vt-dir", dir);
             var vt = document.startViewTransition(apply);
             currentVT = vt;
-            /* A faster switch cancels this transition; only the
-               latest one may clear the direction pin. */
             vt.finished
                 .catch(function () {})
                 .then(function () {
@@ -457,9 +420,11 @@
             v.hidden = !on;
         });
         var v = document.getElementById("subview-" + name);
-        void v.offsetWidth;
-        if (dir && fullMotion()) v.classList.add(dir === "fwd" ? "sub-fwd" : "sub-bwd");
-        startStagger(v, 40);
+        var isMobile = window.matchMedia("(max-width: 1023px)").matches;
+        if (v && !isMobile) {
+            void v.offsetWidth;
+            if (dir && fullMotion()) v.classList.add(dir === "fwd" ? "sub-fwd" : "sub-bwd");
+        }
         lastSub = name;
         firstSweep(name);
     }

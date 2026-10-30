@@ -267,13 +267,16 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     margin-inline-end: auto;
 }
 /* The day head and the exam flag belong to the academic panels: they are
-   hidden on the chat and settings panels, and reappear on every other one
-   (steer 382603f3). :has() reacts to the active panel's `hidden` state,
-   so no behaviour code is involved. */
-.stage:has(#panel-chat:not([hidden])) .dayhead,
-.stage:has(#panel-chat:not([hidden])) .ruler-flag,
-.stage:has(#panel-settings:not([hidden])) .dayhead,
-.stage:has(#panel-settings:not([hidden])) .ruler-flag {
+   hidden on the chat and settings panels, and reappear on every other one. */
+.academic-header {
+    width: 100%;
+    max-width: 960px;
+}
+.academic-header[hidden] {
+    display: none;
+}
+.stage:has(#panel-chat:not([hidden])) .academic-header,
+.stage:has(#panel-settings:not([hidden])) .academic-header {
     display: none;
 }
 .ruler-flag .ic { color: var(--red-text); }
@@ -286,45 +289,48 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .ruler-flag:hover { background: #34181C; }
 .ruler-flag:active { transform: scale(0.99); }
 
-/* ===== Panels ===== */
+/* ===== Panels Viewport & Panels ===== */
 
-.panel { display: none; }
+.panels-viewport {
+    position: relative;
+    max-width: 960px;
+    width: 100%;
+    min-height: 480px;
+    background: var(--ink);
+    contain: layout style;
+}
+
+.panel {
+    display: none;
+    background: var(--ink);
+    width: 100%;
+    min-height: 460px;
+}
 .panel.is-active {
     display: block;
-    animation: panel-in 0.22s ease-out;
-}
-@keyframes panel-in {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: none; }
+    opacity: 1;
+    transform: none;
 }
 
-/* Directional entry (steer 9f2c1d74): a panel reached by rail/bottom-nav
-   click or a touch swipe slides in from the side it came from — forward
-   from the left in RTL, backward from the right. Runs instead of panel-in
-   while one of these classes is on the active panel. steer b7e2d94a:
-   distance/timing matched to the View Transitions page turn so the DOM
-   fallback and the VT path feel identical. */
-.panel.enter-fwd { animation: enter-fwd 0.38s var(--ease-out); }
-.panel.enter-bwd { animation: enter-bwd 0.38s var(--ease-out); }
-@keyframes enter-fwd {
-    from { opacity: 0; transform: translateX(calc(var(--vt-slide, 48px) * -1)); }
-    to { opacity: 1; transform: none; }
+/* Desktop-only subtle transitions when not using VT */
+@media (min-width: 1024px) {
+    .panel.panel-fade-in {
+        animation: panel-fade-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .panel.enter-fwd { animation: panel-enter-fwd 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .panel.enter-bwd { animation: panel-enter-bwd 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
 }
-@keyframes enter-bwd {
-    from { opacity: 0; transform: translateX(var(--vt-slide, 48px)); }
-    to { opacity: 1; transform: none; }
+@keyframes panel-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
-/* Two-layer page turn (steer b7e2d94a, the no-VT fallback): the leaving
-   panel is pinned out of flow by js/app.js (position:absolute at its
-   in-flow box, .stage is position:relative) and departs on top of the
-   arriving one — every browser shows the full turn, not just VT ones. */
-.panel.turn-out-fwd { animation: turn-out-fwd 0.3s cubic-bezier(0.4, 0, 1, 1) both; }
-.panel.turn-out-bwd { animation: turn-out-bwd 0.3s cubic-bezier(0.4, 0, 1, 1) both; }
-@keyframes turn-out-fwd {
-    to { opacity: 0; transform: translateX(var(--vt-slide, 48px)); }
+@keyframes panel-enter-fwd {
+    from { opacity: 0; transform: translateX(calc(var(--vt-slide, 24px) * -1)); }
+    to { opacity: 1; transform: translateX(0); }
 }
-@keyframes turn-out-bwd {
-    to { opacity: 0; transform: translateX(calc(var(--vt-slide, 48px) * -1)); }
+@keyframes panel-enter-bwd {
+    from { opacity: 0; transform: translateX(var(--vt-slide, 24px)); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .panel h2 {
@@ -347,16 +353,19 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 
 /* ===== Today: class list ===== */
 
-/* Four cells per row — number / subject / teacher / time. The state column
-   (تمت/الآن/التالية/قادمة) and its amber cues were removed (live a7068299);
-   the weekly grid's "الآن" cell is the only amber cell left. */
-.classlist { margin-bottom: 6px; }
+/* Four cells per row — number / subject / teacher / time.
+   Layout reserved with min-height to prevent jitter and layout shifts. */
+.classlist {
+    margin-bottom: 6px;
+    min-height: 264px;
+}
 .crow {
     display: grid;
     grid-template-columns: 34px minmax(0, 1.1fr) minmax(0, 0.9fr) auto;
     gap: 4px 14px;
     align-items: baseline;
     padding: 11px 4px;
+    min-height: 44px;
 }
 .crow + .crow { border-top: 1px solid var(--hair-soft); }
 .c-no {
@@ -377,6 +386,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     border: 1px solid var(--hair);
     border-radius: var(--r-md);
     padding: 14px 16px;
+    min-height: 52px;
 }
 .examline-text { color: var(--paper-dim); font-size: 15px; }
 .linkbtn {
@@ -387,12 +397,15 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 }
 .linkbtn:hover { text-decoration-thickness: 2px; }
 
-/* ===== Notes (notifications) ===== */
+/* ===== Notes (notifications & homework) ===== */
 
 .note {
     border: 1px solid var(--hair);
     border-radius: var(--r-md);
     padding: 14px 16px;
+    min-height: 124px;
+    contain: layout;
+    background: var(--ink-2);
 }
 .note + .note { margin-top: 10px; }
 .note.is-pinned { background: var(--ink-2); }
@@ -476,7 +489,8 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .subtab:hover { background: var(--ink-2); color: var(--paper-dim); }
 .subtab.is-active { background: var(--ink-3); border-color: var(--hair); color: var(--paper); }
 .subview { display: none; }
-.subview.is-active { display: block; animation: panel-in 0.22s ease-out; }
+.subview.is-active { display: block; animation: subview-fade-in 0.2s ease-out; }
+@keyframes subview-fade-in { from { opacity: 0; } to { opacity: 1; } }
 /* Directional subview entry (steer 9f2c1d74): the exams view slides in from
    the side it came from — forward (weekly → exams) from the left in RTL. */
 .subview.sub-fwd { animation: sub-fwd-in 0.22s var(--ease-out); }
@@ -488,8 +502,10 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .gridtable, .examtable {
     width: 100%;
     border-collapse: separate; border-spacing: 0;
+    table-layout: fixed;
 }
 .gridtable { min-width: 640px; }
+.gridtable th.col-period { width: 90px; }
 .gridtable th, .gridtable td {
     padding: 9px 10px;
     text-align: center;
@@ -553,6 +569,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .statline {
     display: flex; flex-wrap: wrap; gap: 8px 28px;
     margin: 0 0 6px;
+    min-height: 52px;
 }
 .statline > div { display: flex; flex-direction: column; gap: 4px; min-width: 90px; }
 .statline dt { font-size: 12px; color: var(--muted); }
@@ -646,10 +663,14 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .msg.mine p { color: var(--paper); }
 .msg-img {
     display: block;
+    width: 100%;
     max-width: 180px;
+    height: auto;
+    aspect-ratio: 787 / 456;
     border-radius: 10px;
     cursor: zoom-in;
     margin-bottom: 7px;
+    background: var(--ink-3);
 }
 .msg-img:hover { opacity: 0.85; }
 /* Capsule composer: one pill holds the input, attach, and send. */
@@ -709,6 +730,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     border: 1px solid var(--hair);
     border-radius: var(--r-md);
     padding: 16px;
+    min-height: 112px;
 }
 .setting + .setting { margin-top: 12px; }
 .setting-head {
@@ -722,15 +744,54 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 }
 .setting .btn { margin-inline-start: 0; }
 
-.info-list { margin: 0; }
+.info-list {
+    margin: 0;
+    min-height: 135px;
+}
 .info-list > div {
     display: flex; align-items: center; justify-content: space-between;
     gap: 14px;
     padding: 11px 4px;
+    min-height: 44px;
 }
 .info-list > div + div { border-top: 1px solid var(--hair-soft); }
 .info-list dt { color: var(--muted); font-size: 13px; }
-.info-list dd { margin: 0; font-weight: 700; font-size: 15px; }
+.info-list dd { margin: 0; font-weight: 700; font-size: 15px; min-width: 100px; text-align: end; }
+
+/* ===== Skeleton Loader & Layout Reservation ===== */
+.skeleton-shimmer {
+    background: linear-gradient(90deg, var(--ink-2) 25%, var(--ink-3) 50%, var(--ink-2) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--r-sm);
+}
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.note.is-loading .note-title,
+.note.is-loading .note-meta,
+.note.is-loading .note-body {
+    background: linear-gradient(90deg, var(--ink-2) 25%, var(--ink-3) 50%, var(--ink-2) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    color: transparent !important;
+    border-radius: var(--r-sm);
+}
+.note.is-loading .note-title { width: 140px; height: 18px; display: inline-block; }
+.note.is-loading .note-meta { width: 220px; height: 14px; margin-top: 6px; }
+.note.is-loading .note-body { height: 54px; margin-top: 10px; }
+
+.info-list.is-loading dd {
+    width: 120px;
+    height: 16px;
+    background: linear-gradient(90deg, var(--ink-2) 25%, var(--ink-3) 50%, var(--ink-2) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    color: transparent !important;
+    border-radius: var(--r-sm);
+}
 
 /* ===== Bottom nav (mobile) ===== */
 
@@ -833,6 +894,32 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     .stage { padding: 16px 16px 110px; --vt-slide: 32px; }
     .date-num { font-size: 62px; }
     .dayhead { margin-bottom: 12px; }
+
+    .panels-viewport {
+        min-height: calc(100dvh - 190px);
+        contain: layout style;
+        view-transition-name: none !important;
+    }
+    .panel {
+        min-height: calc(100dvh - 190px);
+    }
+    .panel.is-active,
+    .panel.enter-fwd,
+    .panel.enter-bwd,
+    .panel.panel-fade-in {
+        display: block !important;
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .subview.is-active,
+    .subview.sub-fwd,
+    .subview.sub-bwd {
+        display: block !important;
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
 
     .bottomnav {
         display: flex;
@@ -1027,52 +1114,48 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
    the extra ground is not wasted. */
 @media (min-width: 1440px) {
     .stage { padding: 24px 40px 48px; }
-    .dayhead, .ruler-flag, .panel { margin-inline: auto; }
+    .academic-header, .panels-viewport { margin-inline: auto; }
 }
 @media (min-width: 1700px) {
-    .dayhead, .ruler-flag, .panel { max-width: 1120px; }
+    .academic-header, .panels-viewport { max-width: 1120px; }
 }
 
-/* ===== Motion: boot · cascade · view transitions · feedback =====
-   steer 9f2c1d74 (motion-signature): the "ساعة الدرس" motion language.
-   One authored open sequence, directional continuity between views,
-   list cascades, sliding active indicators, and bounded one-shot sweeps.
-   steer b7e2d94a (page-turn): panel switches become crafted
-   directional page turns. Transform/opacity only — no perpetual
-   motion, no filters. */
+/* ===== Motion: boot · cascade · view transitions · feedback ===== */
 
-/* View Transitions: the stage region is the only named element, so a
-   panel switch composites two snapshots of it while the top bar, rail,
-   and bottom nav persist. The default is a plain crossfade; when
-   js/app.js pins data-vt-dir on <html> the turn becomes directional —
-   the old page departs toward the side it left from while the new page
-   arrives from the opposite side (RTL forward = the new page comes
-   from the left). The slide distance is device-tuned: 48px on the
-   wide stage, 32px on phones. */
-.stage { view-transition-name: stage; --vt-slide: 48px; }
-::view-transition-old(stage) { animation: vt-x-old 0.22s ease-out; }
-::view-transition-new(stage) { animation: vt-x-new 0.3s var(--ease-out); }
-@keyframes vt-x-old { from { opacity: 1; } to { opacity: 0; } }
-@keyframes vt-x-new { from { opacity: 0; } to { opacity: 1; } }
+/* View Transitions: named on panels-viewport so the top bar, rail, bottom nav,
+   and academic header (dayhead + exam flag) remain perfectly stable without flickering or ghosting.
+   mix-blend-mode: normal and background: var(--ink) eliminate any translucent ghosting. */
+@media (min-width: 1024px) {
+    .panels-viewport { view-transition-name: panels-viewport; --vt-slide: 24px; }
+    ::view-transition-old(panels-viewport),
+    ::view-transition-new(panels-viewport) {
+        mix-blend-mode: normal;
+        background: var(--ink);
+    }
+    ::view-transition-old(panels-viewport) { animation: vt-panel-old 0.18s ease-out both; }
+    ::view-transition-new(panels-viewport) { animation: vt-panel-new 0.22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes vt-panel-old { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes vt-panel-new { from { opacity: 0; } to { opacity: 1; } }
 
-html[data-vt-dir="fwd"]::view-transition-old(stage) { animation: vt-out-fwd 0.3s cubic-bezier(0.4, 0, 1, 1); }
-html[data-vt-dir="fwd"]::view-transition-new(stage) { animation: vt-in-fwd 0.38s var(--ease-out); }
-html[data-vt-dir="bwd"]::view-transition-old(stage) { animation: vt-out-bwd 0.3s cubic-bezier(0.4, 0, 1, 1); }
-html[data-vt-dir="bwd"]::view-transition-new(stage) { animation: vt-in-bwd 0.38s var(--ease-out); }
+    html[data-vt-dir="fwd"]::view-transition-old(panels-viewport) { animation: vt-out-fwd 0.18s cubic-bezier(0.4, 0, 1, 1) both; }
+    html[data-vt-dir="fwd"]::view-transition-new(panels-viewport) { animation: vt-in-fwd 0.22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    html[data-vt-dir="bwd"]::view-transition-old(panels-viewport) { animation: vt-out-bwd 0.18s cubic-bezier(0.4, 0, 1, 1) both; }
+    html[data-vt-dir="bwd"]::view-transition-new(panels-viewport) { animation: vt-in-bwd 0.22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+}
 @keyframes vt-out-fwd {
     from { opacity: 1; transform: translateX(0); }
-    to { opacity: 0; transform: translateX(var(--vt-slide)); }
+    to { opacity: 0; transform: translateX(var(--vt-slide, 24px)); }
 }
 @keyframes vt-in-fwd {
-    from { opacity: 0; transform: translateX(calc(var(--vt-slide) * -1)); }
+    from { opacity: 0; transform: translateX(calc(var(--vt-slide, 24px) * -1)); }
     to { opacity: 1; transform: translateX(0); }
 }
 @keyframes vt-out-bwd {
     from { opacity: 1; transform: translateX(0); }
-    to { opacity: 0; transform: translateX(calc(var(--vt-slide) * -1)); }
+    to { opacity: 0; transform: translateX(calc(var(--vt-slide, 24px) * -1)); }
 }
 @keyframes vt-in-bwd {
-    from { opacity: 0; transform: translateX(var(--vt-slide)); }
+    from { opacity: 0; transform: translateX(var(--vt-slide, 24px)); }
     to { opacity: 1; transform: translateX(0); }
 }
 
@@ -1094,14 +1177,18 @@ html[data-boot] .bottomnav { animation: boot-nav 0.35s var(--ease-out) 0.1s both
 @keyframes boot-flag { from { clip-path: inset(0 0 0 100%); } }
 @keyframes boot-nav { from { transform: translateY(100%); } }
 
-/* List cascade: lists enter as lists when a panel or subview is shown.
-   js/app.js sets --i per sibling (capped at 12) and --stag-base on the
-   panel; table rows take the opacity-only variant. */
+/* List cascade: runs exclusively during the one-shot boot sequence.
+   Normal tab transitions render the arriving panel as an integrated, solid block (no phased re-rendering). */
 .stag {
+    animation: none;
+    opacity: 1;
+    transform: none;
+}
+html[data-boot] .stag {
     animation: row-in 0.28s var(--ease-out) both;
     animation-delay: calc(var(--stag-base, 40ms) + var(--i, 0) * var(--stag-step, 24ms));
 }
-tr.stag { animation-name: tr-in; }
+html[data-boot] tr.stag { animation-name: tr-in; }
 @keyframes row-in { from { opacity: 0; transform: translateY(6px); } }
 @keyframes tr-in { from { opacity: 0; } }
 
@@ -1125,7 +1212,7 @@ tr.stag { animation-name: tr-in; }
     html[data-boot] .ruler-flag, html[data-boot] .bottomnav,
     .toast,
     .lightbox:not([hidden]), .lightbox:not([hidden]) #lightbox-img,
-    ::view-transition-old(stage), ::view-transition-new(stage) {
+    ::view-transition-old(panels-viewport), ::view-transition-new(panels-viewport) {
         animation: reduce-fade 0.2s ease !important;
     }
     .toast-progress { animation: none !important; }
