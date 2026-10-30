@@ -800,28 +800,39 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     .bottomnav {
         display: flex;
         position: fixed;
-        inset-inline: 0; bottom: 0;
+        inset-inline: 0;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
         z-index: 60;
-        background: var(--ink);
-        border-top: 1px solid var(--hair);
-        /* Side safe insets are physical: a landscape phone's notch sits on
-           the notch side of the bar regardless of RTL direction. */
-        padding: 6px max(6px, env(safe-area-inset-left, 0px))
-                calc(6px + env(safe-area-inset-bottom, 0px))
-                max(6px, env(safe-area-inset-right, 0px));
+        /* Floating capsule dock (live 22b5afc1, "ink shelf" variant):
+           a content-width pill that floats off the bottom edge and
+           both side edges, centered with margin-inline:auto.
+           Elevation is declared once: ink-2 fill + 1px hair border,
+           no shadow. The physical bottom inset keeps the PWA safe
+           area; side insets are moot for a centered capsule. */
+        width: fit-content;
+        max-width: min(92vw, 620px);
+        margin-inline: auto;
+        background: var(--ink-2);
+        border: 1px solid var(--hair);
+        border-radius: 999px;
+        padding: 6px;
+        gap: 4px;
+        justify-content: center;
     }
     .bn-item {
         position: relative;
-        flex: 1;
-        min-width: 0;
+        flex: 0 1 auto;
+        min-width: 48px;
         display: grid; justify-items: center; gap: 3px;
         background: none; border: none; cursor: pointer;
-        padding: 7px 2px;
-        border-radius: var(--r-sm);
+        padding: 7px 11px;
+        border-radius: 999px;
         color: var(--muted);
         font-family: var(--f-ui); font-size: 11px; font-weight: 700;
-        transition: color 0.15s ease-out, transform 0.1s var(--ease-out);
+        transition: background 0.15s ease-out, color 0.15s ease-out,
+                    transform 0.1s var(--ease-out);
     }
+    .bn-item:hover { background: var(--ink-3); color: var(--paper-dim); }
     .bn-item span {
         position: relative;
         max-width: 100%;
@@ -829,7 +840,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .bn-item .ic { width: 20px; height: 20px; }
-    .bn-item.is-active { color: var(--paper); }
+    .bn-item.is-active { background: var(--ink-3); color: var(--paper); }
     .bn-item.is-active .ic { color: var(--amber); }
     .bn-item:active { transform: scale(0.96); }
     /* Sliding active indicator: a 2px amber line under the label word
@@ -882,12 +893,11 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 }
 
 /* ===== Tablet portrait 768–1023 (adapt, one-thumb context) =====
-   The band stops inheriting the phone layout wholesale: the seven-item
-   bar would stretch the full width of a 10-inch screen, unreachable at
-   the corners from a thumb held at the bottom. The bar keeps its
-   full-width shelf (background + top hair), but the items cluster in
-   the thumb-reachable middle with grown targets; the day number steps
-   up from phone scale. */
+    The band stops inheriting the phone layout wholesale: the seven-item
+    capsule would stretch the full width of a 10-inch screen, unreachable
+    at the corners from a thumb held at the bottom. It clusters in the
+    thumb-reachable middle with grown targets; the day number steps up
+    from phone scale. */
 @media (min-width: 768px) and (max-width: 1023px) {
     .date-num { font-size: 72px; }
     .dayhead { margin-bottom: 16px; }
@@ -900,8 +910,8 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     }
     .bn-item {
         flex: 0 0 auto;
-        min-width: 84px;
-        padding: 8px 4px;
+        min-width: 72px;
+        padding: 8px 6px;
         font-size: 12px;
     }
     .bn-item .ic { width: 22px; height: 22px; }
@@ -926,6 +936,10 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     .panel h2:first-child { margin-top: 4px; }
     .panel-head { margin: 8px 0 12px; }
     .toasts { bottom: 72px; }
+    /* The floating capsule tightens for the short viewport (live 22b5afc1) */
+    .bottomnav { padding: 4px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+    .bn-item { min-width: 44px; padding: 5px 9px; font-size: 10px; }
+    .bn-item .ic { width: 18px; height: 18px; }
 }
 
 /* ===== Wide desktop ≥1440 (adapt) =====
