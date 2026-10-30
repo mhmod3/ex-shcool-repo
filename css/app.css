@@ -808,38 +808,42 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
            both side edges, centered with margin-inline:auto.
            Elevation is declared once: ink-2 fill + 1px hair border,
            no shadow. The physical bottom inset keeps the PWA safe
-           area; side insets are moot for a centered capsule. */
+           area; side insets are moot for a centered capsule.
+           Smart density (steer capsule-smart): the seven items keep
+           their full names in a single row on every phone — labels,
+           padding, and icons scale with the viewport (clamps below)
+           so the row still fits at 320–390px, and the capsule may
+           stretch to 98vw. No ellipsis, no second row. */
         width: fit-content;
-        max-width: min(92vw, 620px);
+        max-width: min(98vw, 620px);
         margin-inline: auto;
         background: var(--ink-2);
         border: 1px solid var(--hair);
         border-radius: 999px;
-        padding: 6px;
-        gap: 4px;
+        padding: clamp(4px, 1vw, 6px);
+        gap: clamp(2px, 0.5vw, 4px);
         justify-content: center;
     }
     .bn-item {
         position: relative;
-        flex: 0 1 auto;
-        min-width: 48px;
+        flex: 0 0 auto; /* smart density: an item never shrinks below its full label */
+        min-width: clamp(38px, 11vw, 48px);
         display: grid; justify-items: center; gap: 3px;
         background: none; border: none; cursor: pointer;
-        padding: 7px 11px;
+        padding: 7px clamp(4px, 1.4vw, 11px);
         border-radius: 999px;
         color: var(--muted);
-        font-family: var(--f-ui); font-size: 11px; font-weight: 700;
+        font-family: var(--f-ui); font-size: clamp(8px, 2.2vw + 1px, 11px); font-weight: 700;
         transition: background 0.15s ease-out, color 0.15s ease-out,
                     transform 0.1s var(--ease-out);
     }
     .bn-item:hover { background: var(--ink-3); color: var(--paper-dim); }
     .bn-item span {
         position: relative;
-        max-width: 100%;
         padding-bottom: 4px;
-        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        white-space: nowrap; /* full name, never truncated (steer capsule-smart) */
     }
-    .bn-item .ic { width: 20px; height: 20px; }
+    .bn-item .ic { width: clamp(16px, 5.2vw, 20px); height: clamp(16px, 5.2vw, 20px); }
     .bn-item.is-active { background: var(--ink-3); color: var(--paper); }
     .bn-item.is-active .ic { color: var(--amber); }
     .bn-item:active { transform: scale(0.96); }
