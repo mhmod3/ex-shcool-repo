@@ -20,6 +20,7 @@
 .impeccable/live/deferred-svelte-component-accepts.json
 .impeccable-live.json
 .impeccable-live/
+.impeccable/live/
 app/.impeccable-live/
 src/.impeccable-live/
 node_modules/.impeccable-live/
