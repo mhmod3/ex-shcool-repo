@@ -127,6 +127,25 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .topbar-logout { display: inline-flex; align-items: center; gap: 7px; color: var(--red-text); text-decoration: none; font-weight: 700; }
 .topbar-logout .ic { width: 17px; height: 17px; }
 .topbar-logout:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Designer credit (steer credit): a quiet signature dead-center in the
+   top bar — absolute, out of the flex flow, so it never pushes the
+   brand/user zones and stays screen-centered on every width. The font
+   shrinks with the viewport to keep its gap to the side content; on the
+   smallest phones the brand sub-name drops (micro band below) to
+   guarantee that gap. pointer-events:none — a signature, not a control. */
+.topbar-credit {
+    position: absolute;
+    top: calc(25px + env(safe-area-inset-top, 0px));
+    inset-inline: 0;
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: clamp(9px, 2vw, 11px);
+    font-weight: 700;
+    color: var(--muted);
+    white-space: nowrap;
+    line-height: 1;
+    pointer-events: none;
+}
 
 /* ===== Shell: stage + rail ===== */
 
@@ -915,6 +934,14 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     .prow { grid-template-columns: 60px minmax(0, 1fr) auto; }
     .p-teacher { display: none; }
     .topbar-user span:first-child { display: none; }
+}
+
+/* ===== Micro ≤389px: guarantee the centered top-bar credit (steer credit) =====
+   The designer credit stays pinned to the top bar's center at every width;
+   on the smallest phones the brand's sub-name ("بوابة الطالب") is the first
+   thing to drop, so the credit keeps its gap to the side content. */
+@media (max-width: 389px) {
+    .topbar-brand span { display: none; }
 }
 
 /* ===== Tablet portrait 768–1023 (adapt, one-thumb context) =====
