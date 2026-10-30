@@ -127,19 +127,32 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .topbar-logout { display: inline-flex; align-items: center; gap: 7px; color: var(--red-text); text-decoration: none; font-weight: 700; }
 .topbar-logout .ic { width: 17px; height: 17px; }
 .topbar-logout:hover { text-decoration: underline; text-underline-offset: 3px; }
-/* Designer credit (steer credit): a quiet signature dead-center in the
-   top bar — absolute, out of the flex flow, so it never pushes the
-   brand/user zones and stays screen-centered on every width. The font
-   shrinks with the viewport to keep its gap to the side content; on the
-   smallest phones the brand sub-name drops (micro band below) to
-   guarantee that gap. pointer-events:none — a signature, not a control. */
+/* Designer credit (steer credit, rev. 3 after the user's second
+   on-device report): a quiet signature in the open middle of the top
+   bar. It is a normal flex child (DOM middle) with flex:1, so it owns
+   the whole gap between the brand and user zones and centers its word
+   inside that gap — the overlap-proof read of "in the middle". rev. 1
+   was absolutely screen-centered; because the brand zone is wider than
+   the user zone, the screen center sat inside the brand's territory and
+   the word crossed "بوابة الطالب". rev. 2 (flex:1) made overlap
+   structurally impossible, but at 390–430px the middle box was too
+   narrow, so the word filled it edge-to-edge and read as pressed
+   against the sub-name — that is the overlap the user kept reporting.
+   rev. 3 widens the middle: the compact band tightens the top bar's
+   gap to 10px, and the micro band (≤430px — typical phone widths)
+   drops the brand sub-name, the first element to leave, so the word
+   sits fully in open space with a clear gap to both side zones; from
+   431px up the sub-name returns and the room already suffices.
+   overflow:hidden stays as the last-resort no-overlap guarantee
+   (clip, never cross). Font clamp(8px, 2vw, 11px) auto-fits every
+   width; the 8px floor keeps the word whole even at 320px.
+   pointer-events:none — a signature, not a control. */
 .topbar-credit {
-    position: absolute;
-    top: calc(25px + env(safe-area-inset-top, 0px));
-    inset-inline: 0;
-    transform: translateY(-50%);
+    flex: 1;
+    min-width: 0;
     text-align: center;
-    font-size: clamp(9px, 2vw, 11px);
+    overflow: hidden;
+    font-size: clamp(8px, 2vw, 11px);
     font-weight: 700;
     color: var(--muted);
     white-space: nowrap;
@@ -917,6 +930,11 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 }
 
 @media (max-width: 559px) {
+    /* Top bar: the designer credit needs a wide middle box on phones
+       (steer credit): with the stock 16px rhythm gap the 390px middle
+       would be ≈62px for a ≈62px word — 10px frees the headroom. */
+    .topbar { gap: 10px; }
+
     /* Exam flag: one line smaller on compact screens. */
     .ruler-flag { font-size: 12px; padding: 8px 12px; }
 
@@ -936,11 +954,14 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     .topbar-user span:first-child { display: none; }
 }
 
-/* ===== Micro ≤389px: guarantee the centered top-bar credit (steer credit) =====
-   The designer credit stays pinned to the top bar's center at every width;
-   on the smallest phones the brand's sub-name ("بوابة الطالب") is the first
-   thing to drop, so the credit keeps its gap to the side content. */
-@media (max-width: 389px) {
+/* ===== Micro ≤430px: guarantee the centered top-bar credit (steer credit, rev. 3) =====
+   The designer credit must be whole, never touching a side zone. With the
+   brand sub-name ("بوابة الطالب") shown, the 390px middle box is only
+   ≈59px for a ≈62px word; on typical phone widths (320–430) the sub-name
+   is the first element to leave, and the credit keeps a clear gap to both
+   side zones. From 431px up the sub-name returns — the middle box
+   (≈100px at 431) already suffices for the word with headroom. */
+@media (max-width: 430px) {
     .topbar-brand span { display: none; }
 }
 
