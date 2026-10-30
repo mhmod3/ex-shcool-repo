@@ -327,9 +327,10 @@
         try { history.replaceState(null, "", "#" + panelId); } catch (e) { /* file:// origins */ }
     }
 
-    /* Clean unified panel switch: the arriving page enters as a single complete block
-       (no phased cascade, no empty frame delay). Directional slide (RTL forward = from left)
-       or smooth cross-fade with solid background prevents any ghosting or overlap. */
+    /* Authored directional panel switch across phone and desktop:
+       Target panel enters with hardware-accelerated 3D slide + soft opacity reveal.
+       RTL forward (swiping right or clicking subsequent tabs) arrives from the left.
+       RTL backward arrives from the right. Zero ghosting, zero empty frames. */
     function activatePanel(panelId, sub, dirIn) {
         if (currentPanelId === panelId && !sub) {
             setHash(panelId);
@@ -341,54 +342,41 @@
         var target = document.getElementById(panelId);
         var acadHeader = $("#academic-header");
         var isAcademic = (panelId !== "panel-chat" && panelId !== "panel-settings");
-
         var isMobile = window.matchMedia("(max-width: 1023px)").matches;
-        // On mobile touch viewports, skip startViewTransition and animations to prevent ghosting and frame drops
-        var useVT = !isMobile && !!dir && "startViewTransition" in document && fullMotion();
 
-        var apply = function () {
-            if (acadHeader) {
-                acadHeader.hidden = !isAcademic;
-            }
-
-            panels.forEach(function (p) {
-                var on = p.id === panelId;
-                p.classList.toggle("is-active", on);
-                p.classList.remove("enter-fwd", "enter-bwd", "panel-fade-in");
-                p.hidden = !on;
-            });
-
-            if (target && !isMobile) {
-                void target.offsetWidth;
-                if (!useVT && dir && fullMotion()) {
-                    target.classList.add(dir === "fwd" ? "enter-fwd" : "enter-bwd");
-                } else if (!useVT) {
-                    target.classList.add("panel-fade-in");
-                }
-            }
-
-            syncNav(panelId);
-            setHash(panelId);
-            currentPanelId = panelId;
-            if (isMobile) {
-                window.scrollTo(0, 0);
-            }
-            if (sub) activateSub(sub);
-            firstSweep(sub || "weekly");
-        };
-
-        if (useVT) {
-            document.documentElement.setAttribute("data-vt-dir", dir);
-            var vt = document.startViewTransition(apply);
-            currentVT = vt;
-            vt.finished
-                .catch(function () {})
-                .then(function () {
-                    if (currentVT === vt) document.documentElement.removeAttribute("data-vt-dir");
-                });
-        } else {
-            apply();
+        if (acadHeader) {
+            acadHeader.hidden = !isAcademic;
         }
+
+        panels.forEach(function (p) {
+            var on = p.id === panelId;
+            p.classList.toggle("is-active", on);
+            p.classList.remove("enter-fwd", "enter-bwd", "panel-fade-in");
+            p.hidden = !on;
+        });
+
+        if (target && fullMotion()) {
+            void target.offsetWidth;
+            if (dir) {
+                target.classList.add(dir === "fwd" ? "enter-fwd" : "enter-bwd");
+            } else {
+                target.classList.add("panel-fade-in");
+            }
+            target.addEventListener("animationend", function handler(e) {
+                if (e.target !== target) return;
+                target.removeEventListener("animationend", handler);
+                target.classList.remove("enter-fwd", "enter-bwd", "panel-fade-in");
+            });
+        }
+
+        syncNav(panelId);
+        setHash(panelId);
+        currentPanelId = panelId;
+        if (isMobile) {
+            window.scrollTo(0, 0);
+        }
+        if (sub) activateSub(sub);
+        firstSweep(sub || "weekly");
     }
 
     /* ---------- Subtabs (schedule: weekly / exams) ---------- */
@@ -420,10 +408,15 @@
             v.hidden = !on;
         });
         var v = document.getElementById("subview-" + name);
-        var isMobile = window.matchMedia("(max-width: 1023px)").matches;
-        if (v && !isMobile) {
+        if (v && fullMotion()) {
+            v.classList.remove("sub-fwd", "sub-bwd");
             void v.offsetWidth;
-            if (dir && fullMotion()) v.classList.add(dir === "fwd" ? "sub-fwd" : "sub-bwd");
+            if (dir) v.classList.add(dir === "fwd" ? "sub-fwd" : "sub-bwd");
+            v.addEventListener("animationend", function handler(e) {
+                if (e.target !== v) return;
+                v.removeEventListener("animationend", handler);
+                v.classList.remove("sub-fwd", "sub-bwd");
+            });
         }
         lastSub = name;
         firstSweep(name);

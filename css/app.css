@@ -298,6 +298,8 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     min-height: 480px;
     background: var(--ink);
     contain: layout style;
+    overflow: hidden;
+    --vt-slide: 36px;
 }
 
 .panel {
@@ -312,25 +314,43 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     transform: none;
 }
 
-/* Desktop-only subtle transitions when not using VT */
-@media (min-width: 1024px) {
-    .panel.panel-fade-in {
-        animation: panel-fade-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .panel.enter-fwd { animation: panel-enter-fwd 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .panel.enter-bwd { animation: panel-enter-bwd 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+/* Hardware-accelerated directional navigation across all devices */
+.panel.enter-fwd {
+    animation: panel-enter-fwd 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: transform, opacity;
 }
+.panel.enter-bwd {
+    animation: panel-enter-bwd 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: transform, opacity;
+}
+.panel.panel-fade-in {
+    animation: panel-fade-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: opacity;
+}
+
 @keyframes panel-fade-in {
-    from { opacity: 0; }
+    from { opacity: 0.4; }
     to { opacity: 1; }
 }
 @keyframes panel-enter-fwd {
-    from { opacity: 0; transform: translateX(calc(var(--vt-slide, 24px) * -1)); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0.35;
+        transform: translate3d(calc(var(--vt-slide, 32px) * -1), 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
 }
 @keyframes panel-enter-bwd {
-    from { opacity: 0; transform: translateX(var(--vt-slide, 24px)); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0.35;
+        transform: translate3d(var(--vt-slide, 32px), 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
 }
 
 .panel h2 {
@@ -491,12 +511,11 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .subview { display: none; }
 .subview.is-active { display: block; animation: subview-fade-in 0.2s ease-out; }
 @keyframes subview-fade-in { from { opacity: 0; } to { opacity: 1; } }
-/* Directional subview entry (steer 9f2c1d74): the exams view slides in from
-   the side it came from — forward (weekly → exams) from the left in RTL. */
-.subview.sub-fwd { animation: sub-fwd-in 0.22s var(--ease-out); }
-.subview.sub-bwd { animation: sub-bwd-in 0.22s var(--ease-out); }
-@keyframes sub-fwd-in { from { opacity: 0; transform: translateX(-16px); } }
-@keyframes sub-bwd-in { from { opacity: 0; transform: translateX(16px); } }
+/* Directional subview entry: seamless hardware-accelerated slide */
+.subview.sub-fwd { animation: sub-fwd-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.subview.sub-bwd { animation: sub-bwd-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes sub-fwd-in { from { opacity: 0.4; transform: translate3d(-16px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+@keyframes sub-bwd-in { from { opacity: 0.4; transform: translate3d(16px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
 
 .gridtable-wrap { overflow-x: auto; }
 .gridtable, .examtable {
@@ -898,27 +917,11 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     .panels-viewport {
         min-height: calc(100dvh - 190px);
         contain: layout style;
-        view-transition-name: none !important;
+        overflow: hidden;
+        --vt-slide: 28px;
     }
     .panel {
         min-height: calc(100dvh - 190px);
-    }
-    .panel.is-active,
-    .panel.enter-fwd,
-    .panel.enter-bwd,
-    .panel.panel-fade-in {
-        display: block !important;
-        animation: none !important;
-        opacity: 1 !important;
-        transform: none !important;
-    }
-    .subview.is-active,
-    .subview.sub-fwd,
-    .subview.sub-bwd {
-        display: block !important;
-        animation: none !important;
-        opacity: 1 !important;
-        transform: none !important;
     }
 
     .bottomnav {
@@ -1191,6 +1194,25 @@ html[data-boot] .stag {
 html[data-boot] tr.stag { animation-name: tr-in; }
 @keyframes row-in { from { opacity: 0; transform: translateY(6px); } }
 @keyframes tr-in { from { opacity: 0; } }
+
+/* Navigation tactile feedback */
+.bn-item.is-active svg {
+    animation: bn-item-pop 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes bn-item-pop {
+    0% { transform: scale(0.86); }
+    50% { transform: scale(1.14); }
+    100% { transform: scale(1); }
+}
+
+.rail-item.is-active svg {
+    animation: rail-item-pop 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes rail-item-pop {
+    0% { transform: scale(0.88); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 
 /* Press feedback */
 .btn:active:not(:disabled) { transform: scale(0.97); }

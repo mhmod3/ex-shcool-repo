@@ -298,6 +298,14 @@ The «ساعة الدرس» language (steer `9f2c1d74`, motion-signature): one a
   3. **Eliminated Stagger Effect Overlap:** Enforced that .stag has animation: none; opacity: 1; transform: none; outside of html[data-boot]. Bypassed all stagger and transform delays during tab switching so content renders as a solid, complete unit instantly.
   4. **Eliminated View Transition Ghosting on Mobile:** Scoped view-transition-name: panels-viewport and its transition pipeline strictly to desktop (min-width: 1024px), disabling startViewTransition completely on mobile touch navigation (max-width: 1023px). Zero rasterization lag, zero double-exposure ghost frames, and zero touch pipeline stutter on mobile.
 
+- **Unified Authored Navigation Motion across Mobile and Desktop (steer animate, session 2026-10-30):**
+  - **Directional Continuity:** Navigating forward (subsequent tabs or swipe-right in RTL) glides the incoming panel from the left (translate3d(-28px, 0, 0) on mobile, -36px on desktop); navigating backward glides from the right (translate3d(28px, 0, 0)).
+  - **Zero Frame Drops and Blank Gaps:** Opacity begins at 0.35 rather than 0, ensuring content is visible on the first paint frame without dark flashes above the dock.
+  - **Touch and Click Symmetry:** Same fluid 220ms deceleration curve cubic-bezier(0.16, 1, 0.3, 1) triggers whether clicking bottom-nav pills, desktop rail items, banner flag links, or swiping horizontally on mobile touch screens.
+  - **Tactile Button Feedback:** Bottom-nav and rail icons trigger a subtle organic scale pop (bn-item-pop / rail-item-pop, 0.86 to 1.14 to 1) on selection.
+  - **Hardware Acceleration:** All transforms run on translate3d compositing layers inside an overflow: hidden; contain: layout style; viewport, eliminating horizontal scroll leaks and layout reflow.
+  - **Reduced Motion:** Gracefully degrades to a soft 0.15s opacity transition under prefers-reduced-motion: reduce.
+
 ## Raster Provenance
 
 - `images/logo.png` — incumbent brand asset from the original application snapshot (the fixture chat image); pre-existing, unmodified in this run.
