@@ -76,10 +76,15 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 
 ::selection { background: var(--amber); color: var(--ink); }
 
+/* Focus ring (steer capsule-polish): the outline follows each element's own
+   corners — pills ring as pills, circles as circles. The former global
+   `border-radius: 4px` squashed the focused element's shape (a 999px pill
+   became a 4px box on press/focus, and the amber outline followed that
+   box — the "square around the pressed button"); it is gone. Bottom-nav
+   items take a wider offset (rule below) so the ring wraps the pill. */
 :focus-visible {
     outline: 2px solid var(--amber);
     outline-offset: 2px;
-    border-radius: 4px;
 }
 
 .ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
@@ -813,31 +818,43 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
            their full names in a single row on every phone — labels,
            padding, and icons scale with the viewport (clamps below)
            so the row still fits at 320–390px, and the capsule may
-           stretch to 98vw. No ellipsis, no second row. */
+           stretch to 98vw. No ellipsis, no second row.
+           Comfort pass (steer capsule-polish): the capsule grew —
+           padding clamp(6px, 1.4vw, 9px) over rows with 10px vertical padding
+           (≈73px total at 390px), so the touch targets clear 48px. */
         width: fit-content;
         max-width: min(98vw, 620px);
         margin-inline: auto;
         background: var(--ink-2);
         border: 1px solid var(--hair);
         border-radius: 999px;
-        padding: clamp(5px, 1.2vw, 8px);
+        padding: clamp(6px, 1.4vw, 9px);
         gap: clamp(2px, 0.5vw, 4px);
         justify-content: center;
     }
     .bn-item {
         position: relative;
         flex: 0 0 auto; /* smart density: an item never shrinks below its full label */
-        min-width: clamp(40px, 11vw, 52px);
+        min-width: clamp(40px, 11.5vw, 56px);
         display: grid; justify-items: center; gap: 3px;
         background: none; border: none; cursor: pointer;
-        padding: 9px clamp(4px, 1.4vw, 11px);
+        padding: 10px clamp(5px, 1.4vw, 11px);
         border-radius: 999px;
         color: var(--muted);
         font-family: var(--f-ui); font-size: clamp(8px, 2.2vw + 1px, 11px); font-weight: 700;
+        /* Comfort press (steer capsule-polish): the browser's gray tap
+           flash is off — the :active scale below is the only press
+           feedback — and touch-action drops the double-tap-zoom wait. */
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
         transition: background 0.15s ease-out, color 0.15s ease-out,
                     transform 0.1s var(--ease-out);
     }
     .bn-item:hover { background: var(--ink-3); color: var(--paper-dim); }
+    /* The ring wraps the pill: a 3px gap between ring and pill so the
+       outline reads as a clean halo around the item, not a clipped box
+       (steer capsule-polish). */
+    .bn-item:focus-visible { outline-offset: 3px; }
     .bn-item span {
         position: relative;
         padding-bottom: 4px;
@@ -873,7 +890,11 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         border-radius: 999px;
         font-size: 10px; font-style: normal; line-height: 1;
     }
-    .toasts { bottom: 84px; }
+    /* Toasts clear the taller comfort capsule (steer capsule-polish):
+       its top edge sits ≈16px lift + ≈80px capsule on the largest
+       phone widths; the safe-area term keeps the clearance in PWA
+       standalone where the dock also rises by the inset. */
+    .toasts { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
 }
 
 @media (max-width: 559px) {
@@ -908,8 +929,11 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 
     .bottomnav {
         justify-content: center;
+        /* Flat 8px bottom padding (steer capsule-polish): the `bottom`
+           position already adds the safe-area inset, so counting it in
+           the padding too would lift the items twice in standalone. */
         padding: 8px max(24px, env(safe-area-inset-left, 0px))
-                calc(8px + env(safe-area-inset-bottom, 0px))
+                8px
                 max(24px, env(safe-area-inset-right, 0px));
     }
     .bn-item {
@@ -919,7 +943,8 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         font-size: 12px;
     }
     .bn-item .ic { width: 22px; height: 22px; }
-    .toasts { bottom: 96px; }
+    /* Clears the 80px tablet capsule + 16px lift (steer capsule-polish). */
+    .toasts { bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* ===== Phone landscape (adapt: short viewport) =====
