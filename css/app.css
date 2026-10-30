@@ -820,17 +820,17 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         background: var(--ink-2);
         border: 1px solid var(--hair);
         border-radius: 999px;
-        padding: clamp(4px, 1vw, 6px);
+        padding: clamp(5px, 1.2vw, 8px);
         gap: clamp(2px, 0.5vw, 4px);
         justify-content: center;
     }
     .bn-item {
         position: relative;
         flex: 0 0 auto; /* smart density: an item never shrinks below its full label */
-        min-width: clamp(38px, 11vw, 48px);
+        min-width: clamp(40px, 11vw, 52px);
         display: grid; justify-items: center; gap: 3px;
         background: none; border: none; cursor: pointer;
-        padding: 7px clamp(4px, 1.4vw, 11px);
+        padding: 9px clamp(4px, 1.4vw, 11px);
         border-radius: 999px;
         color: var(--muted);
         font-family: var(--f-ui); font-size: clamp(8px, 2.2vw + 1px, 11px); font-weight: 700;
