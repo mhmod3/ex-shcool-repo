@@ -112,6 +112,7 @@
            tomorrow on Sat–Thu, Sunday straight after Fri/Sat. Always a
            grid column (0..4). The day head above keeps the real day. */
         var focus = (day + 1) % 7;
+        var rawFocus = focus; // before the weekend skip below
         if (focus === 5 || focus === 6) focus = 0;
         var grid = $(".gridtable");
 
@@ -157,14 +158,16 @@
            tomorrow (Sat–Thu and Saturday, whose tomorrow is Sunday), الأحد
            when Friday skips the weekend. */
         var listHead = $("#panel-today h2");
-        if (listHead) listHead.textContent = focus === (day + 1) % 7 ? "دروس الغد" : "دروس الأحد";
+        if (listHead) listHead.textContent = rawFocus === focus ? "دروس الغد" : "دروس الأحد";
 
         /* Exam rows: past attenuated, the next upcoming red-tinted */
         function examDate(cell) {
             var host = cell.querySelector("span[dir=ltr]") || cell;
-            var m = host.textContent.trim().match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            var m = host.textContent.trim().match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
             if (!m) return null;
-            return new Date(+m[3], +m[2] - 1, +m[1]);
+            var y = +m[3];
+            if (y < 100) y += 2000; // tolerate 2-digit years
+            return new Date(y, +m[2] - 1, +m[1]);
         }
         var exams = $$(".examtable tbody tr").map(function (tr) {
             var date = examDate(tr.cells[1]);
@@ -295,7 +298,8 @@
         });
     });
 
-    $("#logout-link").addEventListener("click", function (e) {
+    var logoutLink = $("#logout-link");
+    if (logoutLink) logoutLink.addEventListener("click", function (e) {
         e.preventDefault();
         toast("النسخة الثابتة لا تُنهِي الجلسة، والخروج يتم عبر الخادم الأصلي لمدرستي.");
     });
@@ -464,14 +468,15 @@
         return false;
     }
 
-    if ("ontouchstart" in window) {
+    if ("ontouchstart" in window && $(".stage")) {
+        var stage = $(".stage");
         var swipeX = null, swipeY = null;
-        $(".stage").addEventListener("touchstart", function (e) {
+        stage.addEventListener("touchstart", function (e) {
             var t = e.touches[0];
             swipeX = t.clientX;
             swipeY = t.clientY;
         }, { passive: true });
-        $(".stage").addEventListener("touchend", function (e) {
+        stage.addEventListener("touchend", function (e) {
             if (swipeX === null) return;
             var t = e.changedTouches[0];
             var dx = t.clientX - swipeX;
@@ -519,7 +524,8 @@
 
     /* ---------- Unread state: local, honest ---------- */
 
-    $("#mark-all-read").addEventListener("click", function () {
+    var markAllReadBtn = $("#mark-all-read");
+    if (markAllReadBtn) markAllReadBtn.addEventListener("click", function () {
         $$(".note.is-unread").forEach(function (n) { n.classList.remove("is-unread"); });
         $$("[data-unread-count]").forEach(function (c) {
             c.textContent = "";
@@ -557,6 +563,7 @@
     var lbImg = $("#lightbox-img");
     var lbReturn = null;
 
+    if (lb && lbImg) {
     function openLightbox(src) {
         lbImg.src = src;
         lbReturn = document.activeElement;
@@ -591,4 +598,5 @@
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
+    }
 })();
