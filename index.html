@@ -300,6 +300,42 @@
           </section>
           <!-- ===== Panel: settings ===== -->
           <section class="panel" id="panel-settings" hidden>
+              <h2>المظهر</h2>
+              <div class="theme-cards-grid">
+                  <button type="button" class="theme-card is-active" aria-pressed="true">
+                      <div class="theme-card-header">
+                          <span class="theme-card-icon is-moon">
+                              <svg class="ic" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                          </span>
+                          <span class="theme-card-indicator">
+                              <span class="indicator-dot"></span>
+                          </span>
+                      </div>
+                      <div class="theme-card-body">
+                          <strong class="theme-card-title">الوضع الداكن</strong>
+                          <span class="theme-card-desc">أرضية حبر مريحة للعين</span>
+                      </div>
+                      <div class="theme-card-badge">
+                          <span class="chip chip-green chip-sm">نشط حاليا</span>
+                      </div>
+                  </button>
+
+                  <button type="button" class="theme-card" aria-pressed="false">
+                      <div class="theme-card-header">
+                          <span class="theme-card-icon is-sun">
+                              <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                          </span>
+                          <span class="theme-card-indicator"></span>
+                      </div>
+                      <div class="theme-card-body">
+                          <strong class="theme-card-title">وضع Light</strong>
+                          <span class="theme-card-desc">إضاءة عالية للقراءة النهارية</span>
+                      </div>
+                      <div class="theme-card-badge">
+                          <span class="chip chip-muted chip-sm">بديل نهاري</span>
+                      </div>
+                  </button>
+              </div>
               <h2>قنوات الإشعارات</h2>
               <div class="setting">
                   <div class="setting-head"><strong>إشعارات الهاتف (Web Push)</strong><span class="chip chip-muted">لم تفعّل</span></div>
@@ -342,4 +378,7 @@
     </div>
 
     <script src="./js/app.js"></script>
+<!-- impeccable-live-start -->
+<script src="http://localhost:8400/live.js?token=1ca7030d-14c4-4a74-9efe-a751ab23dff0"></script>
+<!-- impeccable-live-end -->
 </body></html>
