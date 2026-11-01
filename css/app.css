@@ -1251,7 +1251,7 @@ html[data-boot] tr.stag { animation-name: tr-in; }
 
 .theme-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
     margin-bottom: 24px;
 }
@@ -1259,17 +1259,18 @@ html[data-boot] tr.stag { animation-name: tr-in; }
     position: relative;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     text-align: right;
     background: var(--ink);
     border: 1px solid var(--hair);
     border-radius: var(--r-md);
-    padding: 16px;
+    padding: 10px 14px;
     cursor: pointer;
     color: var(--paper);
     font-family: var(--f-ui);
-    min-height: 124px;
+    min-height: 52px;
     transition: transform 0.22s var(--ease-out), border-color 0.2s ease, background 0.2s ease, box-shadow 0.24s var(--ease-out);
 }
 .theme-card:hover {
@@ -1282,7 +1283,7 @@ html[data-boot] tr.stag { animation-name: tr-in; }
 .theme-card.is-active {
     background: var(--ink-2);
     border-color: var(--amber);
-    box-shadow: 0 0 0 1px var(--amber), 0 6px 20px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 0 1px var(--amber), 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 .theme-card::after {
     content: '';
@@ -1299,18 +1300,17 @@ html[data-boot] tr.stag { animation-name: tr-in; }
 .theme-card.is-active::after {
     transform: scaleX(1);
 }
-.theme-card-header {
+.theme-card-main {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+    gap: 10px;
 }
 .theme-card-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--r-sm);
     background: var(--ink-3);
     border: 1px solid var(--hair);
@@ -1329,6 +1329,10 @@ html[data-boot] tr.stag { animation-name: tr-in; }
     border-color: var(--amber);
     background: var(--amber-tint);
 }
+.theme-card-title {
+    font-size: 14px;
+    font-weight: 700;
+}
 .theme-card-indicator {
     width: 18px;
     height: 18px;
@@ -1338,6 +1342,7 @@ html[data-boot] tr.stag { animation-name: tr-in; }
     align-items: center;
     justify-content: center;
     transition: border-color 0.2s ease;
+    flex-shrink: 0;
 }
 .theme-card.is-active .theme-card-indicator {
     border-color: var(--amber);
@@ -1352,23 +1357,6 @@ html[data-boot] tr.stag { animation-name: tr-in; }
 .theme-card.is-active .indicator-dot {
     display: block;
     animation: v2-dot-fade 0.2s ease-out;
-}
-.theme-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
-}
-.theme-card-title {
-    font-size: 15px;
-    font-weight: 700;
-}
-.theme-card-desc {
-    font-size: 12px;
-    color: var(--muted);
-}
-.theme-card-badge {
-    margin-top: auto;
 }
 
 @keyframes v2-spin-moon {
