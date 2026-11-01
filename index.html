@@ -342,4 +342,12 @@
     </div>
 
     <script src="./js/app.js"></script>
+    <script>
+        // تسجيل Service Worker: تخزين مؤقت للتثبيت والعمل دون انترنت.
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("./sw.js").catch(function () { /* بلا SW تعمل الصفحة كالمعتاد */ });
+            });
+        }
+    </script>
 </body></html>
