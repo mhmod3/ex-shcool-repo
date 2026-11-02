@@ -1417,7 +1417,19 @@ html[data-boot] tr.stag { animation-name: tr-in; }
     100% { opacity: 1; transform: scale(1); }
 }
 
+/* ===== Theme transition overlay (smooth, universal circular reveal / crossfade) ===== */
+.theme-transition-curtain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99999;
+    will-change: opacity, clip-path;
+}
+
 @media (prefers-reduced-motion: reduce) {
+    .theme-transition-curtain {
+        display: none !important;
+    }
     .theme-card,
     .theme-card-icon,
     .theme-card::after,
