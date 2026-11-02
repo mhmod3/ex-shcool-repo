@@ -18,7 +18,8 @@ deep-link عبر الهاش.
 ```
 website/
 ├── index.html            صفحة البوابة (جميع اللوحات في ملف واحد + مجموعة الأيقونات SVG)
-├── manifest.webmanifest  Manifest PWA (standalone، لا service worker)
+├── manifest.webmanifest  Manifest PWA (standalone + أيقونة 512)
+├── sw.js                 Service Worker: تخزين مؤقت للتثبيت والعمل دون انترنت
 ├── PRODUCT.md             سياق المنتج: المستخدم، المهمة، قيود الساكنة، المبادئ
 ├── DESIGN.md             نظام التصميم «ساعة الدرس»: التوكنات، القواعد، وقرارات الجلسات (مرجع live id لكل قرار)
 ├── css/
@@ -36,7 +37,8 @@ website/
 ├── images/
 │   ├── logo.png          شعار التطبيق (أصل اللقطة الأصلية)
 │   ├── icon-32.png       أيقونة الموقع
-│   └── icon-192.png      أيقونة PWA
+│   ├── icon-192.png      أيقونة PWA
+│   └── icon-512.png      أيقونة PWA (شرط التثبيت)
 └── .impeccable/          مخرجات Impeccable: ملخص السطح (surfaces/index-html.md)، جلسات live، جانبية التصميم
 ```
 

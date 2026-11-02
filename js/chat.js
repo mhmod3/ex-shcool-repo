@@ -56,7 +56,10 @@
     function esc(value) {
         var d = document.createElement('div');
         d.textContent = value == null ? '' : String(value);
-        return d.innerHTML;
+        // innerHTML escaping covers & < > only; attribute contexts (href=,
+        // data-mid=) also need quotes covered or a crafted value could
+        // break out of the attribute.
+        return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     function setBadges(count) {
@@ -69,7 +72,7 @@
 
     function messageMarkup(m, opts) {
         var parts = [];
-        parts.push('<div class="chat-msg ' + (m.is_mine ? 'mine' : 'theirs') + '" data-mid="' + m.id + '">');
+        parts.push('<div class="chat-msg ' + (m.is_mine ? 'mine' : 'theirs') + '" data-mid="' + esc(m.id) + '">');
         if (opts.showSender && !m.is_mine) {
             parts.push('<div class="chat-msg-sender">' + esc(m.sender_name) +
                 (m.sender_role ? ' · ' + esc(m.sender_role) : '') + '</div>');
@@ -197,7 +200,8 @@
             if (document.hidden) return false;
             if (mode === 'student') {
                 // Only poll while the portal chat tab is the active panel.
-                return !!root.closest('.portal-panel.active');
+                // The portal marks panels with .panel and .is-active.
+                return !!root.closest('.panel.is-active');
             }
             return true;
         }
