@@ -93,7 +93,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     position: absolute; top: -48px; right: 12px;
     z-index: 200; padding: 8px 14px;
     background: var(--amber); color: var(--ink);
-    font-weight: 700; font-size: 13px; border-radius: 0 0 8px 8px;
+    font-weight: 700; font-size: 13px; border-radius: 0 0 var(--r-md) var(--r-md);
     transition: top 0.15s ease-out;
 }
 .skip-link:focus { top: env(safe-area-inset-top, 0px); }
@@ -120,7 +120,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     border-bottom: 1px solid var(--hair);
 }
 .topbar-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
-.topbar-brand img { width: 24px; height: 24px; border-radius: 5px; }
+.topbar-brand img { width: 24px; height: 24px; border-radius: var(--r-sm); }
 .topbar-brand strong { font-family: var(--f-disp); font-weight: 700; font-size: 16px; }
 .topbar-brand span { font-size: 12px; color: var(--muted); }
 .topbar-user { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--muted); }
@@ -670,9 +670,9 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 .msg p { margin: 0; color: var(--paper-dim); overflow-wrap: anywhere; }
 .msg .msg-meta {
     display: block; margin-top: 5px;
-    font-size: 10px; color: var(--faint);
+    font-size: 11px; color: var(--faint);
     font-variant-numeric: tabular-nums;
-    opacity: 0.85;
+    opacity: 0.9;
 }
 .msg.mine {
     align-self: flex-end;
@@ -963,7 +963,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         padding: 10px clamp(5px, 1.4vw, 11px);
         border-radius: 999px;
         color: var(--muted);
-        font-family: var(--f-ui); font-size: clamp(8px, 2.2vw + 1px, 11px); font-weight: 700;
+        font-family: var(--f-ui); font-size: clamp(11px, 2.2vw + 1px, 12px); font-weight: 700;
         /* Comfort press (steer capsule-polish): the browser's gray tap
            flash is off — the :active scale below is the only press
            feedback — and touch-action drops the double-tap-zoom wait. */
@@ -1010,7 +1010,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
         display: grid; place-items: center;
         background: var(--red); color: var(--paper);
         border-radius: 999px;
-        font-size: 10px; font-style: normal; line-height: 1;
+        font-size: 11px; font-style: normal; line-height: 1;
     }
     /* Toasts clear the taller comfort capsule (steer capsule-polish):
        its top edge sits ≈16px lift + ≈80px capsule on the largest
@@ -1105,7 +1105,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     .toasts { bottom: 72px; }
     /* The floating capsule tightens for the short viewport (live 22b5afc1) */
     .bottomnav { padding: 4px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
-    .bn-item { min-width: 44px; padding: 5px 9px; font-size: 10px; }
+    .bn-item { min-width: 44px; padding: 5px 9px; font-size: 11px; }
     .bn-item .ic { width: 18px; height: 18px; }
 }
 
