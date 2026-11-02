@@ -522,7 +522,7 @@
     var themeMeta = $('meta[name="theme-color"]');
     var themeCards = $$(".theme-card");
 
-    function applyTheme(theme, save) {
+    function applyThemeDirect(theme, save) {
         var isLight = theme === "light";
         if (isLight) {
             document.documentElement.setAttribute("data-theme", "light");
@@ -548,19 +548,121 @@
         }
     }
 
+    var themeSwitching = false;
+
+    function applyThemeWithTransition(theme, originEl) {
+        var currentIsLight = document.documentElement.getAttribute("data-theme") === "light";
+        var newIsLight = theme === "light";
+        if (currentIsLight === newIsLight) return;
+
+        if (!fullMotion() || themeSwitching) {
+            applyThemeDirect(theme, true);
+            return;
+        }
+
+        var x = window.innerWidth / 2;
+        var y = window.innerHeight / 2;
+        if (originEl && originEl.getBoundingClientRect) {
+            var rect = originEl.getBoundingClientRect();
+            x = rect.left + rect.width / 2;
+            y = rect.top + rect.height / 2;
+        }
+
+        var endRadius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y)
+        );
+
+        if (document.startViewTransition) {
+            try {
+                var vt = document.startViewTransition(function () {
+                    applyThemeDirect(theme, true);
+                });
+                vt.ready.then(function () {
+                    document.documentElement.animate({
+                        clipPath: [
+                            "circle(0px at " + x + "px " + y + "px)",
+                            "circle(" + endRadius + "px at " + x + "px " + y + "px)"
+                        ]
+                    }, {
+                        duration: 380,
+                        easing: "cubic-bezier(0.2, 0, 0, 1)",
+                        pseudoElement: "::view-transition-new(root)"
+                    });
+                }).catch(function () {});
+                return;
+            } catch (e) {
+                // Fall through to fallback overlay
+            }
+        }
+
+        // Lightweight universal fallback for browsers without View Transitions
+        themeSwitching = true;
+        var curtain = document.createElement("div");
+        curtain.className = "theme-transition-curtain";
+        curtain.style.background = newIsLight ? "#F5F7FA" : "#0D1420";
+        curtain.style.opacity = "0";
+        document.body.appendChild(curtain);
+
+        var supportsClip = "clipPath" in curtain.style || "webkitClipPath" in curtain.style;
+        if (supportsClip && curtain.animate) {
+            curtain.style.opacity = "1";
+            var anim = curtain.animate([
+                { clipPath: "circle(0px at " + x + "px " + y + "px)" },
+                { clipPath: "circle(" + endRadius + "px at " + x + "px " + y + "px)" }
+            ], {
+                duration: 360,
+                easing: "cubic-bezier(0.2, 0, 0, 1)",
+                fill: "forwards"
+            });
+            anim.onfinish = function () {
+                applyThemeDirect(theme, true);
+                if (curtain.parentNode) curtain.parentNode.removeChild(curtain);
+                themeSwitching = false;
+            };
+        } else if (curtain.animate) {
+            var fadeAnim = curtain.animate([
+                { opacity: 0 },
+                { opacity: 1 }
+            ], {
+                duration: 180,
+                easing: "ease-in",
+                fill: "forwards"
+            });
+            fadeAnim.onfinish = function () {
+                applyThemeDirect(theme, true);
+                var fadeOut = curtain.animate([
+                    { opacity: 1 },
+                    { opacity: 0 }
+                ], {
+                    duration: 180,
+                    easing: "ease-out"
+                });
+                fadeOut.onfinish = function () {
+                    if (curtain.parentNode) curtain.parentNode.removeChild(curtain);
+                    themeSwitching = false;
+                };
+            };
+        } else {
+            applyThemeDirect(theme, true);
+            if (curtain.parentNode) curtain.parentNode.removeChild(curtain);
+            themeSwitching = false;
+        }
+    }
+
     var savedTheme = null;
     try {
         savedTheme = localStorage.getItem("ms-theme");
     } catch (e) {}
 
     if (savedTheme === "light" || savedTheme === "dark") {
-        applyTheme(savedTheme, false);
+        applyThemeDirect(savedTheme, false);
     }
 
     themeCards.forEach(function (card) {
         card.addEventListener("click", function () {
             var targetTheme = card.getAttribute("data-theme-val") || "dark";
-            applyTheme(targetTheme, true);
+            applyThemeWithTransition(targetTheme, card);
         });
     });
 
