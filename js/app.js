@@ -517,6 +517,53 @@
 
     initTabKeyboard($(".subtabs"), subtabs, function (t) { activateSub(t.getAttribute("data-subtab")); });
 
+    /* ---------- Theme Switcher: local storage & DOM sync ---------- */
+
+    var themeMeta = $('meta[name="theme-color"]');
+    var themeCards = $$(".theme-card");
+
+    function applyTheme(theme, save) {
+        var isLight = theme === "light";
+        if (isLight) {
+            document.documentElement.setAttribute("data-theme", "light");
+            if (themeMeta) themeMeta.setAttribute("content", "#F5F7FA");
+        } else {
+            document.documentElement.removeAttribute("data-theme");
+            if (themeMeta) themeMeta.setAttribute("content", "#0D1420");
+        }
+
+        themeCards.forEach(function (card) {
+            var val = card.getAttribute("data-theme-val");
+            var active = (isLight && val === "light") || (!isLight && val === "dark");
+            card.classList.toggle("is-active", active);
+            card.setAttribute("aria-pressed", active ? "true" : "false");
+        });
+
+        if (save) {
+            try {
+                localStorage.setItem("ms-theme", isLight ? "light" : "dark");
+            } catch (err) {
+                // Ignore private browsing storage quota errors
+            }
+        }
+    }
+
+    var savedTheme = null;
+    try {
+        savedTheme = localStorage.getItem("ms-theme");
+    } catch (e) {}
+
+    if (savedTheme === "light" || savedTheme === "dark") {
+        applyTheme(savedTheme, false);
+    }
+
+    themeCards.forEach(function (card) {
+        card.addEventListener("click", function () {
+            var targetTheme = card.getAttribute("data-theme-val") || "dark";
+            applyTheme(targetTheme, true);
+        });
+    });
+
     /* ---------- Unread state: local, honest ---------- */
 
     $("#mark-all-read").addEventListener("click", function () {
