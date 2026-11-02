@@ -302,7 +302,7 @@
           <section class="panel" id="panel-settings" hidden>
               <h2>المظهر</h2>
               <div class="theme-cards-grid">
-                  <button type="button" class="theme-card is-active" aria-pressed="true" onclick="const grid=this.closest('.theme-cards-grid'); grid.querySelectorAll('.theme-card').forEach(c => { c.classList.remove('is-active'); c.setAttribute('aria-pressed', 'false'); }); this.classList.add('is-active'); this.setAttribute('aria-pressed', 'true');">
+                  <button type="button" class="theme-card is-active" data-theme-val="dark" aria-pressed="true">
                       <div class="theme-card-main">
                           <span class="theme-card-icon is-moon">
                               <svg class="ic" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
@@ -314,12 +314,12 @@
                       </span>
                   </button>
 
-                  <button type="button" class="theme-card" aria-pressed="false" onclick="const grid=this.closest('.theme-cards-grid'); grid.querySelectorAll('.theme-card').forEach(c => { c.classList.remove('is-active'); c.setAttribute('aria-pressed', 'false'); }); this.classList.add('is-active'); this.setAttribute('aria-pressed', 'true');">
+                  <button type="button" class="theme-card" data-theme-val="light" aria-pressed="false">
                       <div class="theme-card-main">
                           <span class="theme-card-icon is-sun">
                               <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
                           </span>
-                          <strong class="theme-card-title">وضع Light</strong>
+                          <strong class="theme-card-title">الوضع الفاتح</strong>
                       </div>
                       <span class="theme-card-indicator">
                           <span class="indicator-dot"></span>

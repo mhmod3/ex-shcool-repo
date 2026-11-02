@@ -32,6 +32,11 @@
     --green-dot: #2E9E6B;
     --green-tint: #12291F;
 
+    /* Shadows & Overlays */
+    --card-shadow: rgba(0, 0, 0, 0.35);
+    --popover-shadow: rgba(4, 8, 14, 0.45);
+    --scrim: rgba(4, 8, 14, 0.92);
+
     /* Type */
     --f-disp: 'Cairo', 'Almarai', sans-serif;
     --f-ui: 'Almarai', sans-serif;
@@ -50,6 +55,40 @@
     --vt-slide: 48px;
 }
 
+[data-theme="light"] {
+    /* Ground */
+    --ink: #F5F7FA;
+    --ink-2: #FFFFFF;
+    --ink-3: #EDF2F7;
+    --hair: #D2D9E2;
+    --hair-soft: #E2E8F0;
+
+    /* Ink roles */
+    --paper: #101828;
+    --paper-dim: #344054;
+    --muted: #667085;
+    --faint: #98A2B3;
+
+    /* The one live colour */
+    --amber: #D97706;
+    --amber-tint: rgba(217, 119, 6, 0.12);
+
+    /* Attention (exam / absence states) */
+    --red: #D92D20;
+    --red-tint: #FEF3F2;
+    --red-text: #B42318;
+
+    /* Completion / presence */
+    --green: #079455;
+    --green-dot: #039855;
+    --green-tint: #ECFDF3;
+
+    /* Shadows & Overlays */
+    --card-shadow: rgba(16, 24, 40, 0.08);
+    --popover-shadow: rgba(16, 24, 40, 0.14);
+    --scrim: rgba(16, 24, 40, 0.72);
+}
+
 * { box-sizing: border-box; }
 
 html {
@@ -57,6 +96,11 @@ html {
     caret-color: var(--amber);
     scrollbar-width: thin;
     scrollbar-color: var(--hair) transparent;
+    color-scheme: dark;
+}
+
+html[data-theme="light"] {
+    color-scheme: light;
 }
 
 body {
@@ -67,6 +111,7 @@ body {
     font-size: 15px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -834,7 +879,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
     border-radius: var(--r-md);
     padding: 12px 14px;
     font-size: 13px; color: var(--paper-dim);
-    box-shadow: 0 8px 24px rgba(4, 8, 14, 0.45);
+    box-shadow: 0 8px 24px var(--popover-shadow);
     animation: toast-in 0.2s ease-out;
 }
 /* Countdown line (steer 9f2c1d74): a 2px amber hairline consumes over the
@@ -867,7 +912,7 @@ body::-webkit-scrollbar, ::-webkit-scrollbar { width: 10px; height: 10px; }
 
 .lightbox {
     position: fixed; inset: 0;
-    background: rgba(4, 8, 14, 0.92);
+    background: var(--scrim);
     display: grid; place-items: center;
     padding: 24px;
     z-index: 90;
@@ -1283,7 +1328,7 @@ html[data-boot] tr.stag { animation-name: tr-in; }
 .theme-card.is-active {
     background: var(--ink-2);
     border-color: var(--amber);
-    box-shadow: 0 0 0 1px var(--amber), 0 4px 16px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 0 0 1px var(--amber), 0 4px 16px var(--card-shadow);
 }
 .theme-card::after {
     content: '';
